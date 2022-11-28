@@ -26,9 +26,9 @@ date_max = max(avg_rent_all_long$Date)
 
 
 ui <- dashboardPage(
-  dashboardHeader(title = "Manhattan Rentals"),
+  dashboardHeader(title = "NYC Rentals"),
   dashboardSidebar(
-    sidebarUserPanel("Jason Phillip", image = "https://www.wikihow.com/images/thumb/a/ab/Jason_Phillip.png/-crop-320-320-320px-Jason_Phillip.png"),
+    sidebarUserPanel(''),
     sidebarMenu(
       menuItem("Info",
                tabName = "info",
