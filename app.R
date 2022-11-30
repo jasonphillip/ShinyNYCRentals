@@ -1,6 +1,7 @@
 
 
 
+
 # using one file for shiny app instead of 3(global, ui and server)
 
 # Global ####
@@ -60,9 +61,11 @@ ui <- dashboardPage(
     sidebarUserPanel(''),
     # SidebarMenu ####
     sidebarMenu(
-      menuItem("Info",
-               tabName = "info",
-               icon = icon("th")),
+      menuItem(
+        "Info",
+        tabName = "info",
+        icon = icon("info-sign", lib = "glyphicon")
+      ),
       menuItem(
         "Median Asking Rent",
         tabName = "median",
@@ -87,280 +90,283 @@ ui <- dashboardPage(
   dashboardBody(tabItems(
     # First tab content with Info ####
     tabItem(tabName = "info",
-            fluidRow(
+            fluidPage(
               box(
                 title = "Manhattan Apartment Rentals",
-                width = 4,
-                background = "light-blue",
+                width = 12,
+               # background = "light-blue",
                 "The purpose of this app is to allow tenants, landlords and brokers to view how the rental market
-                conditions have changed over a period of time.  When an apartment lease is up for renewal, the invested
+                conditions have changed over a period of time."  ,
+                imageOutput("map_img"),
+                " When an apartment lease is up for renewal, the invested
                 parties need information on how the market has changed since a lease was last signed.  Most leases are
                 only for a year, however I included a longer time frame for situations where the rent has not been changed
-                for several years.
-"
+                for several years."
               )
+              # ,
+              # box(title = "Map of Manhattan Neighborhoods",
+              #     imageOutput("map_img"))
+            )
 
 
+            ),
+    # Second tab content with graphs and infoboxes showing median rent ####
+    tabItem(tabName = "median",
+            fluidRow(
+              box(
+                width = '100%' ,
+
+                # doesnt look right.  Need to update
+                infoBoxOutput("startBox"),
+                infoBoxOutput("endBox"),
+                infoBoxOutput("changeBox")
+              )
+            ),
+            fluidRow(
+              box(plotOutput("place_plot", height = 350)),
+              box(radioButtons(
+                "size",
+                "Choose Apartment Size:",
+                inline = TRUE,
+                c(
+                  "All Apartment Sizes" = "avg_rent_all_long",
+                  "Studio" = "avg_rent_studio_long",
+                  "One Bedroom" = "avg_rent_one_long",
+                  "Two Bedroom" = "avg_rent_two_long",
+                  "Three Plus More Bedrooms" = "avg_rent_three_long"
+                )
+              )),
+              box(
+                dateRangeInput(
+                  'date_range',
+                  h3("Date range"),
+                  format = "mm/yyyy",
+                  # pop up calendar still shows days instead of months  and years
+                  start = date_min,
+                  end = date_max,
+                  min = date_min,
+                  max = date_max
+                )
+              ),
+              
+              box(
+                title = "Neighborhood",
+                checkboxGroupInput(
+                  'category',
+                  "Choose a neighborhood:",
+                  inline = TRUE,
+                  selected = "Flatiron" ,
+                  choices = list(
+                    # created list by hand.  should of used a function?
+                    "Battery Park City" = "Battery.Park.City",
+                    "Central Harlem" = "Central.Harlem",
+                    "Central Park South" = "Central.Park.South",
+                    "Chelsea" = "Chelsea",
+                    "Chinatown" = "Chinatown",
+                    "East Harlem" = "East.Harlem",
+                    "East Village" = "East.Village",
+                    "Financial District" = "Financial.District",
+                    "Flatiron" = "Flatiron",
+                    "Gramercy Park" = "Gramercy.Park",
+                    "Greenwich Village" = "Greenwich.Village",
+                    "Hamilton Heights" = "Hamilton.Heights",
+                    "Inwood" = "Inwood",
+                    "Little Italy" = "Little.Italy",
+                    "Lower East.Side" = "Lower.East.Side",
+                    "Midtown" = "Midtown",
+                    "Midtown East" = "Midtown.East",
+                    "Midtown South" = "Midtown.South",
+                    "Midtown West" = "Midtown.West",
+                    "Morningside Heights" = "Morningside.Heights",
+                    "Nolita" = "Nolita",
+                    "Roosevelt Island " = "Roosevelt.Island",
+                    "Soho" = "Soho",
+                    "Stuyvesant Town" = "Stuyvesant.Town.PCV",
+                    "Tribeca" = "Tribeca",
+                    "Upper East Side" = "Upper.East.Side",
+                    "Upper West Side" = 'Upper.West.Side',
+                    "Washington Heights" = "Washington.Heights",
+                    "West Harlem" = "West.Harlem",
+                    "West Village" = "West.Village"
+                  )
+                ),
+              )
             )),
-# Second tab content with graphs and infoboxes showing median rent ####
-tabItem(tabName = "median",
-        fluidRow(
-          box(
-            width = '100%' ,
-            h3(align = "center",
-               style = 'font-size:32px;',
-               ""),
-            # doesnt look right.  Need to update
-            infoBoxOutput("startBox"),
-            infoBoxOutput("endBox"),
-            infoBoxOutput("changeBox")
-          )
-        ),
-        fluidRow(
-          box(plotOutput("place_plot", height = 350)),
-          box(radioButtons(
-            "size",
-            "Choose Apartment Size:",
-            inline = TRUE,
-            c(
-              "All Apartment Sizes" = "avg_rent_all_long",
-              "Studio" = "avg_rent_studio_long",
-              "One Bedroom" = "avg_rent_one_long",
-              "Two Bedroom" = "avg_rent_two_long",
-              "Three Plus More Bedrooms" = "avg_rent_three_long"
-            )
-          )),
-          box(
-            dateRangeInput(
-              'date_range',
-              h3("Date range"),
-              format = "mm/yyyy",
-              # pop up calendar still shows days instead of months  and years
-              start = date_min,
-              end = date_max,
-              min = date_min,
-              max = date_max
-            )
-          ),
-          
-          box(
-            title = "Neighborhood",
-            checkboxGroupInput(
-              'category',
-              "Choose a neighborhood:",
-              inline = TRUE,
-              selected = "Flatiron" ,
-              choices = list(
-                # created list by hand.  should of used a function?
-                "Battery Park City" = "Battery.Park.City",
-                "Central Harlem" = "Central.Harlem",
-                "Central Park South" = "Central.Park.South",
-                "Chelsea" = "Chelsea",
-                "Chinatown" = "Chinatown",
-                "East Harlem" = "East.Harlem",
-                "East Village" = "East.Village",
-                "Financial District" = "Financial.District",
-                "Flatiron" = "Flatiron",
-                "Gramercy Park" = "Gramercy.Park",
-                "Greenwich Village" = "Greenwich.Village",
-                "Hamilton Heights" = "Hamilton.Heights",
-                "Inwood" = "Inwood",
-                "Little Italy" = "Little.Italy",
-                "Lower East.Side" = "Lower.East.Side",
-                "Midtown" = "Midtown",
-                "Midtown East" = "Midtown.East",
-                "Midtown South" = "Midtown.South",
-                "Midtown West" = "Midtown.West",
-                "Morningside Heights" = "Morningside.Heights",
-                "Nolita" = "Nolita",
-                "Roosevelt Island " = "Roosevelt.Island",
-                "Soho" = "Soho",
-                "Stuyvesant Town" = "Stuyvesant.Town.PCV",
-                "Tribeca" = "Tribeca",
-                "Upper East Side" = "Upper.East.Side",
-                "Upper West Side" = 'Upper.West.Side',
-                "Washington Heights" = "Washington.Heights",
-                "West Harlem" = "West.Harlem",
-                "West Village" = "West.Village"
+    
+    # Third tab content number of listings on market ####
+    tabItem(tabName = "listings",
+            fluidRow(
+              box(
+                width = '100%' ,
+                h3(align = "center",
+                   style = 'font-size:32px;',
+                   ""),
+                # doesnt look right.  Need to update
+                infoBoxOutput("startlistBox"),
+                infoBoxOutput("endlistBox"),
+                infoBoxOutput("changelistBox")
               )
             ),
-          )
-        )),
-
-# Third tab content number of listings on market ####
-tabItem(tabName = "listings",
-        fluidRow(
-          box(
-            width = '100%' ,
-            h3(align = "center",
-               style = 'font-size:32px;',
-               ""),
-            # doesnt look right.  Need to update
-            infoBoxOutput("startlistBox"),
-            infoBoxOutput("endlistBox"),
-            infoBoxOutput("changelistBox")
-          )
-        ),
-        fluidRow(
-          box(plotOutput("place2_plot", height = 350)),
-          box(
-            radioButtons(
-              "size2",
-              "Choose Apartment Size:",
-              inline = TRUE,
-              c(
-                "All Apartment Sizes" = "inventory_all_long",
-                "Studio" = "inventory_studio_long",
-                "One Bedroom" = "inventory_one_long",
-                "Two Bedroom" = "inventory_two_long",
-                "Three Plus More Bedrooms" = "inventory_three_long"
-                
+            fluidRow(
+              box(plotOutput("place2_plot", height = 350)),
+              box(
+                radioButtons(
+                  "size2",
+                  "Choose Apartment Size:",
+                  inline = TRUE,
+                  c(
+                    "All Apartment Sizes" = "inventory_all_long",
+                    "Studio" = "inventory_studio_long",
+                    "One Bedroom" = "inventory_one_long",
+                    "Two Bedroom" = "inventory_two_long",
+                    "Three Plus More Bedrooms" = "inventory_three_long"
+                    
+                  )
+                )
+              ),
+              box(
+                dateRangeInput(
+                  'date_range2',
+                  h3("Date range"),
+                  format = "mm/yyyy",
+                  # pop up calendar still shows days instead of months  and years
+                  start = date_min,
+                  end = date_max,
+                  min = date_min,
+                  max = date_max
+                )
+              ),
+              
+              box(
+                title = "Neighborhood",
+                checkboxGroupInput(
+                  'category2',
+                  "Choose a neighborhood:",
+                  inline = TRUE,
+                  selected = "Flatiron" ,
+                  choices = list(
+                    # created list by hand.  should of used a function?
+                    "Battery Park City" = "Battery.Park.City",
+                    "Central Harlem" = "Central.Harlem",
+                    "Central Park South" = "Central.Park.South",
+                    "Chelsea" = "Chelsea",
+                    "Chinatown" = "Chinatown",
+                    "East Harlem" = "East.Harlem",
+                    "East Village" = "East.Village",
+                    "Financial District" = "Financial.District",
+                    "Flatiron" = "Flatiron",
+                    "Gramercy Park" = "Gramercy.Park",
+                    "Greenwich Village" = "Greenwich.Village",
+                    "Hamilton Heights" = "Hamilton.Heights",
+                    "Inwood" = "Inwood",
+                    "Little Italy" = "Little.Italy",
+                    "Lower East.Side" = "Lower.East.Side",
+                    "Midtown" = "Midtown",
+                    "Midtown East" = "Midtown.East",
+                    "Midtown South" = "Midtown.South",
+                    "Midtown West" = "Midtown.West",
+                    "Morningside Heights" = "Morningside.Heights",
+                    "Nolita" = "Nolita",
+                    "Roosevelt Island " = "Roosevelt.Island",
+                    "Soho" = "Soho",
+                    "Stuyvesant Town" = "Stuyvesant.Town.PCV",
+                    "Tribeca" = "Tribeca",
+                    "Upper East Side" = "Upper.East.Side",
+                    "Upper West Side" = 'Upper.West.Side',
+                    "Washington Heights" = "Washington.Heights",
+                    "West Harlem" = "West.Harlem",
+                    "West Village" = "West.Village"
+                  )
+                ),
               )
-            )
-          ),
-          box(
-            dateRangeInput(
-              'date_range2',
-              h3("Date range"),
-              format = "mm/yyyy",
-              # pop up calendar still shows days instead of months  and years
-              start = date_min,
-              end = date_max,
-              min = date_min,
-              max = date_max
-            )
-          ),
-          
-          box(
-            title = "Neighborhood",
-            checkboxGroupInput(
-              'category2',
-              "Choose a neighborhood:",
-              inline = TRUE,
-              selected = "Flatiron" ,
-              choices = list(
-                # created list by hand.  should of used a function?
-                "Battery Park City" = "Battery.Park.City",
-                "Central Harlem" = "Central.Harlem",
-                "Central Park South" = "Central.Park.South",
-                "Chelsea" = "Chelsea",
-                "Chinatown" = "Chinatown",
-                "East Harlem" = "East.Harlem",
-                "East Village" = "East.Village",
-                "Financial District" = "Financial.District",
-                "Flatiron" = "Flatiron",
-                "Gramercy Park" = "Gramercy.Park",
-                "Greenwich Village" = "Greenwich.Village",
-                "Hamilton Heights" = "Hamilton.Heights",
-                "Inwood" = "Inwood",
-                "Little Italy" = "Little.Italy",
-                "Lower East.Side" = "Lower.East.Side",
-                "Midtown" = "Midtown",
-                "Midtown East" = "Midtown.East",
-                "Midtown South" = "Midtown.South",
-                "Midtown West" = "Midtown.West",
-                "Morningside Heights" = "Morningside.Heights",
-                "Nolita" = "Nolita",
-                "Roosevelt Island " = "Roosevelt.Island",
-                "Soho" = "Soho",
-                "Stuyvesant Town" = "Stuyvesant.Town.PCV",
-                "Tribeca" = "Tribeca",
-                "Upper East Side" = "Upper.East.Side",
-                "Upper West Side" = 'Upper.West.Side',
-                "Washington Heights" = "Washington.Heights",
-                "West Harlem" = "West.Harlem",
-                "West Village" = "West.Village"
-              )
-            ),
-          )
-        )),
-# Fourth tab content percent of discounted units ####
-tabItem(tabName = "discounts",
-        fluidRow(
-          box(
-            width = '100%' ,
-            h3(align = "center",
-               style = 'font-size:32px;',
-               ""),
-            # doesnt look right.  Need to update
-            infoBoxOutput("startdiscBox"),
-            infoBoxOutput("enddiscBox"),
-            infoBoxOutput("changediscBox")
-          )
-        ),
-        fluidRow(
-          box(plotOutput("place3_plot", height = 350)),
-          box(
-            radioButtons(
-              "size3",
-              "Choose Apartment Size:",
-              inline = TRUE,
-              c(
-                "All Apartment Sizes" = "discount_all_long",
-                "Studio" = "discount_studio_long",
-                "One Bedroom" = "discount_one_long",
-                "Two Bedroom" = "discount_two_long",
-                "Three Plus More Bedrooms" = "discount_three_long"
-                
-              )
-            )
-          ),
-          box(
-            dateRangeInput(
-              'date_range3',
-              h3("Date range"),
-              format = "mm/yyyy",
-              # pop up calendar still shows days instead of months  and years
-              start = date_min,
-              end = date_max,
-              min = date_min,
-              max = date_max
-            )
-          ),
-          
-          box(
-            title = "Neighborhood",
-            checkboxGroupInput(
-              'category3',
-              "Choose a neighborhood:",
-              inline = TRUE,
-              selected = "Flatiron" ,
-              choices = list(
-                # created list by hand.  should of used a function?
-                "Battery Park City" = "Battery.Park.City",
-                "Central Harlem" = "Central.Harlem",
-                "Central Park South" = "Central.Park.South",
-                "Chelsea" = "Chelsea",
-                "Chinatown" = "Chinatown",
-                "East Harlem" = "East.Harlem",
-                "East Village" = "East.Village",
-                "Financial District" = "Financial.District",
-                "Flatiron" = "Flatiron",
-                "Gramercy Park" = "Gramercy.Park",
-                "Greenwich Village" = "Greenwich.Village",
-                "Hamilton Heights" = "Hamilton.Heights",
-                "Inwood" = "Inwood",
-                "Little Italy" = "Little.Italy",
-                "Lower East.Side" = "Lower.East.Side",
-                "Midtown" = "Midtown",
-                "Midtown East" = "Midtown.East",
-                "Midtown South" = "Midtown.South",
-                "Midtown West" = "Midtown.West",
-                "Morningside Heights" = "Morningside.Heights",
-                "Nolita" = "Nolita",
-                "Roosevelt Island " = "Roosevelt.Island",
-                "Soho" = "Soho",
-                "Stuyvesant Town" = "Stuyvesant.Town.PCV",
-                "Tribeca" = "Tribeca",
-                "Upper East Side" = "Upper.East.Side",
-                "Upper West Side" = 'Upper.West.Side',
-                "Washington Heights" = "Washington.Heights",
-                "West Harlem" = "West.Harlem",
-                "West Village" = "West.Village"
+            )),
+    # Fourth tab content percent of discounted units ####
+    tabItem(tabName = "discounts",
+            fluidRow(
+              box(
+                width = '100%' ,
+                h3(align = "center",
+                   style = 'font-size:32px;',
+                   ""),
+                # doesnt look right.  Need to update
+                infoBoxOutput("startdiscBox"),
+                infoBoxOutput("enddiscBox"),
+                infoBoxOutput("changediscBox")
               )
             ),
-          )
-        ))
+            fluidRow(
+              box(plotOutput("place3_plot", height = 350)),
+              box(
+                radioButtons(
+                  "size3",
+                  "Choose Apartment Size:",
+                  inline = TRUE,
+                  c(
+                    "All Apartment Sizes" = "discount_all_long",
+                    "Studio" = "discount_studio_long",
+                    "One Bedroom" = "discount_one_long",
+                    "Two Bedroom" = "discount_two_long",
+                    "Three Plus More Bedrooms" = "discount_three_long"
+                    
+                  )
+                )
+              ),
+              box(
+                dateRangeInput(
+                  'date_range3',
+                  h3("Date range"),
+                  format = "mm/yyyy",
+                  # pop up calendar still shows days instead of months  and years
+                  start = date_min,
+                  end = date_max,
+                  min = date_min,
+                  max = date_max
+                )
+              ),
+              
+              box(
+                title = "Neighborhood",
+                checkboxGroupInput(
+                  'category3',
+                  "Choose a neighborhood:",
+                  inline = TRUE,
+                  selected = "Flatiron" ,
+                  choices = list(
+                    # created list by hand.  should of used a function?
+                    "Battery Park City" = "Battery.Park.City",
+                    "Central Harlem" = "Central.Harlem",
+                    "Central Park South" = "Central.Park.South",
+                    "Chelsea" = "Chelsea",
+                    "Chinatown" = "Chinatown",
+                    "East Harlem" = "East.Harlem",
+                    "East Village" = "East.Village",
+                    "Financial District" = "Financial.District",
+                    "Flatiron" = "Flatiron",
+                    "Gramercy Park" = "Gramercy.Park",
+                    "Greenwich Village" = "Greenwich.Village",
+                    "Hamilton Heights" = "Hamilton.Heights",
+                    "Inwood" = "Inwood",
+                    "Little Italy" = "Little.Italy",
+                    "Lower East.Side" = "Lower.East.Side",
+                    "Midtown" = "Midtown",
+                    "Midtown East" = "Midtown.East",
+                    "Midtown South" = "Midtown.South",
+                    "Midtown West" = "Midtown.West",
+                    "Morningside Heights" = "Morningside.Heights",
+                    "Nolita" = "Nolita",
+                    "Roosevelt Island " = "Roosevelt.Island",
+                    "Soho" = "Soho",
+                    "Stuyvesant Town" = "Stuyvesant.Town.PCV",
+                    "Tribeca" = "Tribeca",
+                    "Upper East Side" = "Upper.East.Side",
+                    "Upper West Side" = 'Upper.West.Side',
+                    "Washington Heights" = "Washington.Heights",
+                    "West Harlem" = "West.Harlem",
+                    "West Village" = "West.Village"
+                  )
+                ),
+              )
+            ))
   ))
 )
 
@@ -389,7 +395,7 @@ server <- function(input, output) {
              Date >= input$date_range[[1]] &
                Date <= input$date_range[[2]]) %>%
       ggplot(aes(x = Date, y = value, colour = category)) +
-      geom_line() +
+      geom_line(size = .5) +
       scale_colour_hue(name = "Neighborhood",      # Set legend title
                        l = 30) +
       xlab("") +
@@ -400,7 +406,6 @@ server <- function(input, output) {
     #rendering plot
     place_plot()
   })
-  
   
   
   # Info boxes for median rent (second tab) ####
@@ -734,10 +739,22 @@ server <- function(input, output) {
   output$changediscBox <- renderInfoBox({
     disc_change_box()
   })
-  
+  # server side to render map image ####
+  output$map_img <- renderImage({
+    list(src = "./www/map5.gif",
+         width = "25%",
+         height = "100%",
+         style ="display: block; margin-left: auto; margin-right: auto;")
+    
+  }, deleteFile = F) 
   
 }
 
+
+
+
+
+  
 
 
 # shinyApp(ui, server)
