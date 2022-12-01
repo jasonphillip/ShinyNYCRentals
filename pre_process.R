@@ -512,3 +512,20 @@ summarise(first(value))
 med_size <- paste0(round(mean(mediansize[[2]])))
 infoBox("Starting Discounted Listings", med_size, icon = icon("calculator"))
 
+
+# ui: code in the first tabPanel 
+tabPanel(title = "Home",
+         imageOutput("map_img")
+)
+
+# add output in server
+output$map_img <- renderImage({
+  
+  list(src = "www/manhattan-neighborhood-map.png",
+       width = "100%",
+       height = 330)
+  
+}, deleteFile = F)
+
+
+

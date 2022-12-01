@@ -95,7 +95,7 @@ ui <- dashboardPage(
                 title = "Manhattan Apartment Rentals",
                 width = 12,
                # background = "light-blue",
-                "The purpose of this app is to allow tenants, landlords and brokers to view how the rental market
+                "test The purpose of this app is to allow tenants, landlords and brokers to view how the rental market
                 conditions have changed over a period of time."  ,
                 imageOutput("map_img"),
                 " When an apartment lease is up for renewal, the invested
