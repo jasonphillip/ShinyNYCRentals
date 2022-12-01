@@ -417,6 +417,8 @@ server <- function(input, output) {
         avg_rent_three_long = avg_rent_three_long,
         avg_rent_all_long
       )
+    
+    
     mediansize %>%  # creating plot after file is selected.
       filter(category %in% input$category,
              Date >= input$date_range[[1]] &
@@ -425,6 +427,7 @@ server <- function(input, output) {
       geom_line(size = .5) +
       scale_colour_hue(name = "Neighborhood",      # Set legend title
                        l = 30) +
+      ylim(0,NA) +
       xlab("") +
       ylab("Median Asking Rent") +
       theme(axis.text.x = element_text(angle = 60, hjust = 1))
@@ -538,6 +541,7 @@ server <- function(input, output) {
       geom_line() +
       scale_colour_hue(name = "Neighborhood",      # Set legend title
                        l = 30) +
+      ylim(0,NA) +
       xlab("") +
       ylab("Listings Available") +
       theme(axis.text.x = element_text(angle = 60, hjust = 1))
@@ -662,6 +666,7 @@ server <- function(input, output) {
       geom_line() +
       scale_colour_hue(name = "Neighborhood",      # Set legend title
                        l = 30) +
+      ylim(0,NA) +
       xlab("") +
       ylab("Percent of Listings Discounted") +
       scale_y_continuous(labels = scales::percent) +
