@@ -4,7 +4,7 @@ library(dplyr)
 library(tibble)
 library(stringr)
 library(tidyverse)
-library(googleVis)
+
 # library(hrbrthemes)
 
 # The below is used to manipulate data and save in .rda format and will need to use SQlite in furture update
@@ -303,6 +303,8 @@ inventory_threet$Date <- as.Date(inventory_threet$Date, "%d.%Y.%m")
 
 discount_threet$Date <- as.Date(discount_threet$Date, "%d.%Y.%m")
 
+
+
 # check for missing data
 which(is.na(median_rent_all_manhattant))
 
@@ -310,7 +312,151 @@ which(is.na(inventory_all_manhattant))
 
 which(is.na(discount_all_manhattant))
 
+
 which(is.na(median_rent_studiot))
+
+which(is.na(inventory_studiot))
+
+which(is.na(discount_studiot))
+
+
+which(is.na(median_rent_onet))
+
+which(is.na(inventory_onet))
+
+which(is.na(discount_onet))
+
+
+which(is.na(median_rent_twot))
+
+which(is.na(inventory_twot))
+
+which(is.na(discount_twot))
+
+
+which(is.na(median_rent_threet))
+
+which(is.na(inventory_threet))
+
+which(is.na(discount_threet))
+
+
+
+
+
+
+#filling NA's and removing columns with no data
+
+median_rent_studiot <- 
+  median_rent_studiot %>%
+  fill(All.Downtown:West.Village, .direction = 'up') %>% 
+  fill(All.Downtown:West.Village, .direction = 'down') %>% 
+  select( -Stuyvesant.Town.PCV)
+
+
+
+inventory_studiot <- 
+  inventory_studiot %>%
+  fill(All.Downtown:West.Village, .direction = 'up') %>% 
+  fill(All.Downtown:West.Village, .direction = 'down') %>% 
+  select( -Stuyvesant.Town.PCV)
+
+
+
+discount_studiot <- 
+  discount_studiot %>%
+  fill(All.Downtown:West.Village, .direction = 'up') %>% 
+  fill(All.Downtown:West.Village, .direction = 'down') %>% 
+  select( -Stuyvesant.Town.PCV)
+
+
+
+
+
+median_rent_onet <- 
+  median_rent_onet %>%
+  fill(All.Downtown:West.Village, .direction = 'up') %>% 
+  fill(All.Downtown:West.Village, .direction = 'down') %>% 
+  select( -Stuyvesant.Town.PCV)
+
+
+
+inventory_onet <- 
+  inventory_onet %>%
+  fill(All.Downtown:West.Village, .direction = 'up') %>% 
+  fill(All.Downtown:West.Village, .direction = 'down') %>% 
+  select( -Stuyvesant.Town.PCV)
+
+
+
+discount_onet <- 
+  discount_onet %>%
+  fill(All.Downtown:West.Village, .direction = 'up') %>% 
+  fill(All.Downtown:West.Village, .direction = 'down') %>% 
+  select( -Stuyvesant.Town.PCV)
+
+
+
+
+
+
+median_rent_twot <- 
+  median_rent_twot %>%
+  fill(All.Downtown:West.Village, .direction = 'up') %>% 
+  fill(All.Downtown:West.Village, .direction = 'down') %>% 
+  select( -Stuyvesant.Town.PCV)
+
+
+
+inventory_twot <- 
+  inventory_twot %>%
+  fill(All.Downtown:West.Village, .direction = 'up') %>% 
+  fill(All.Downtown:West.Village, .direction = 'down') %>% 
+  select( -Stuyvesant.Town.PCV)
+
+
+
+discount_twot <- 
+  discount_twot %>%
+  fill(All.Downtown:West.Village, .direction = 'up') %>% 
+  fill(All.Downtown:West.Village, .direction = 'down') %>% 
+  select( -Stuyvesant.Town.PCV)
+
+
+
+
+
+
+median_rent_threet <- 
+  median_rent_threet %>%
+  fill(All.Downtown:West.Village, .direction = 'up') %>% 
+  fill(All.Downtown:West.Village, .direction = 'down') %>% 
+  select( -Stuyvesant.Town.PCV)
+
+
+
+inventory_threet <- 
+  inventory_threet %>%
+  fill(All.Downtown:West.Village, .direction = 'up') %>% 
+  fill(All.Downtown:West.Village, .direction = 'down') %>% 
+  select( -Stuyvesant.Town.PCV)
+
+
+
+discount_threet <- 
+  discount_threet %>%
+  fill(All.Downtown:West.Village, .direction = 'up') %>% 
+  fill(All.Downtown:West.Village, .direction = 'down') %>% 
+  select( -Stuyvesant.Town.PCV)
+
+
+
+
+
+
+
+
+
 
 
 # converted to long dataset which works better for ggplot with multiple lines
@@ -375,6 +521,12 @@ discount_three_long <-
   pivot_longer(cols = -Date, names_to = "category", values_to = "value")
 
 
+# Fill NA data
+
+# avg_rent_studio_long2 <- 
+#   avg_rent_studio_long %>%
+#   group_by(category)
+#   fill(value, .direction = 'up')
 
 # Saving as an Rdataframe to be used in shiny app
 save(avg_rent_all_long ,file="avg_rent_all_long.Rda")

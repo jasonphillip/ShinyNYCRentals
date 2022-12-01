@@ -17,6 +17,7 @@ library(stringr)
 library(tidyverse)
 library(ggplot2)
 
+
 # loading dataframes created in pre_process.  Will need to use SQLite in future update
 load("avg_rent_all_long.Rda")
 load("inventory_all_long.Rda")
@@ -37,6 +38,9 @@ load("discount_two_long.Rda")
 load("avg_rent_three_long.Rda")
 load("inventory_three_long.Rda")
 load("discount_three_long.Rda")
+
+#  avg_rent_studio_long <- avg_rent_studio_long %>% fill(c, .direction = 'up')
+
 
 # Creating function to convert numbers to percentage
 percent <- function(x,
@@ -83,7 +87,19 @@ ui <- dashboardPage(
         "Percent of Listings Discounted",
         tabName = "discounts",
         icon = icon("home", lib = "glyphicon")
+      ),
+      dateRangeInput(
+        'date_range',
+        h3("Date range"),
+        format = "mm/yyyy",
+        startview = 'year',
+        # pop up calendar still shows days instead of months  and years
+        start = date_min,
+        end = date_max,
+        min = date_min,
+        max = date_max
       )
+      
     )
   ),
   ## Body content
@@ -92,16 +108,27 @@ ui <- dashboardPage(
     tabItem(tabName = "info",
             fluidPage(
               box(
-                title = "Manhattan Apartment Rentals",
+                title = "Welcome the Manhattan Rental Trends App. 
+                Coded by: Jason Phillip <Jason.Phillip@gmail.com>",
                 width = 12,
                # background = "light-blue",
-                "test The purpose of this app is to allow tenants, landlords and brokers to view how the rental market
-                conditions have changed over a period of time."  ,
+                "The purpose of this app is to allow landlords and brokers to view how
+               the rental market conditions have changed over a period of time.  When an
+               apartment lease is up for renewal, landlords and brokers need data so they 
+               can price the apartment correctly. Most residential leases are only for a year, 
+               however I included a longer time frame for situations where the rent has not 
+               been changed for several years."  ,
                 imageOutput("map_img"),
-                " When an apartment lease is up for renewal, the invested
-                parties need information on how the market has changed since a lease was last signed.  Most leases are
-                only for a year, however I included a longer time frame for situations where the rent has not been changed
-                for several years."
+                "The tabs on the left allow the user to view three different trends over a 
+               selected period of time.   The first tab brings the user to a page that shows 
+               the asking median rent , the second shows the amount of listings on the market, 
+               and the third shows the percent of listings that have discounted their asking 
+               price.   Each of these three pages has a line graph and three infoboxes.  The 
+               infoboxes show the starting value, ending value and the amount of change over 
+               the selected period of time.  The user can filter the data by apartment size, 
+               neighborhood and time frame.  More than neighborhoods can be selected for 
+               situations where an apartment is located on the border of one or more 
+               neighborhoods. The infoboxes will show the average of all neighborhoods selected."
               )
               # ,
               # box(title = "Map of Manhattan Neighborhoods",
@@ -136,21 +163,24 @@ ui <- dashboardPage(
                   "Three Plus More Bedrooms" = "avg_rent_three_long"
                 )
               )),
-              box(
-                dateRangeInput(
-                  'date_range',
-                  h3("Date range"),
-                  format = "mm/yyyy",
-                  # pop up calendar still shows days instead of months  and years
-                  start = date_min,
-                  end = date_max,
-                  min = date_min,
-                  max = date_max
-                )
-              ),
+              # box(
+              #   dateRangeInput(
+              #     'date_range',
+              #     h3("Date range"),
+              #     format = "mm/yyyy",
+              #     # pop up calendar still shows days instead of months  and years
+              #     start = date_min,
+              #     end = date_max,
+              #     min = date_min,
+              #     max = date_max
+              #   )
+              # ),
+              # view: 'months',
+              # minView: 'months',
+              # dateFormat: 'MMMM yyyy'
               
               box(
-                title = "Neighborhood",
+             #   title = "Neighborhood",
                 checkboxGroupInput(
                   'category',
                   "Choose a neighborhood:",
@@ -181,7 +211,6 @@ ui <- dashboardPage(
                     "Nolita" = "Nolita",
                     "Roosevelt Island " = "Roosevelt.Island",
                     "Soho" = "Soho",
-                    "Stuyvesant Town" = "Stuyvesant.Town.PCV",
                     "Tribeca" = "Tribeca",
                     "Upper East Side" = "Upper.East.Side",
                     "Upper West Side" = 'Upper.West.Side',
@@ -224,18 +253,18 @@ ui <- dashboardPage(
                   )
                 )
               ),
-              box(
-                dateRangeInput(
-                  'date_range2',
-                  h3("Date range"),
-                  format = "mm/yyyy",
-                  # pop up calendar still shows days instead of months  and years
-                  start = date_min,
-                  end = date_max,
-                  min = date_min,
-                  max = date_max
-                )
-              ),
+              # box(
+              #   dateRangeInput(
+              #     'date_range2',
+              #     h3("Date range"),
+              #     format = "mm/yyyy",
+              #     # pop up calendar still shows days instead of months  and years
+              #     start = date_min,
+              #     end = date_max,
+              #     min = date_min,
+              #     max = date_max
+              #   )
+              # ),
               
               box(
                 title = "Neighborhood",
@@ -269,7 +298,6 @@ ui <- dashboardPage(
                     "Nolita" = "Nolita",
                     "Roosevelt Island " = "Roosevelt.Island",
                     "Soho" = "Soho",
-                    "Stuyvesant Town" = "Stuyvesant.Town.PCV",
                     "Tribeca" = "Tribeca",
                     "Upper East Side" = "Upper.East.Side",
                     "Upper West Side" = 'Upper.West.Side',
@@ -311,18 +339,18 @@ ui <- dashboardPage(
                   )
                 )
               ),
-              box(
-                dateRangeInput(
-                  'date_range3',
-                  h3("Date range"),
-                  format = "mm/yyyy",
-                  # pop up calendar still shows days instead of months  and years
-                  start = date_min,
-                  end = date_max,
-                  min = date_min,
-                  max = date_max
-                )
-              ),
+              # box(
+              #   dateRangeInput(
+              #     'date_range3',
+              #     h3("Date range"),
+              #     format = "mm/yyyy",
+              #     # pop up calendar still shows days instead of months  and years
+              #     start = date_min,
+              #     end = date_max,
+              #     min = date_min,
+              #     max = date_max
+              #   )
+              # ),
               
               box(
                 title = "Neighborhood",
@@ -356,7 +384,6 @@ ui <- dashboardPage(
                     "Nolita" = "Nolita",
                     "Roosevelt Island " = "Roosevelt.Island",
                     "Soho" = "Soho",
-                    "Stuyvesant Town" = "Stuyvesant.Town.PCV",
                     "Tribeca" = "Tribeca",
                     "Upper East Side" = "Upper.East.Side",
                     "Upper West Side" = 'Upper.West.Side',
@@ -504,8 +531,8 @@ server <- function(input, output) {
     mediansize %>%  # creating plot after file is selected.
       filter(
         category %in% input$category2,
-        Date >= input$date_range2[[1]] &
-          Date <= input$date_range2[[2]]
+        Date >= input$date_range[[1]] &
+          Date <= input$date_range[[2]]
       ) %>%
       ggplot(aes(x = Date, y = value, colour = category)) +
       geom_line() +
@@ -539,8 +566,8 @@ server <- function(input, output) {
       group_by(category) %>%
       filter(
         category %in% input$category2,
-        Date >= input$date_range2[[1]] &
-          Date <= input$date_range2[[2]]
+        Date >= input$date_range[[1]] &
+          Date <= input$date_range[[2]]
       ) %>%
       summarise(first(value))
     # taking the average percent of change if more than one neighborhood is selected
@@ -569,8 +596,8 @@ server <- function(input, output) {
       group_by(category) %>%
       filter(
         category %in% input$category2,
-        Date >= input$date_range2[[1]] &
-          Date <= input$date_range2[[2]]
+        Date >= input$date_range[[1]] &
+          Date <= input$date_range[[2]]
       ) %>%
       summarise(last(value))
     # taking the average percent of change if more than one neighborhood is selected
@@ -598,8 +625,8 @@ server <- function(input, output) {
       group_by(category) %>%
       filter(
         category %in% input$category2,
-        Date >= input$date_range2[[1]] &
-          Date <= input$date_range2[[2]]
+        Date >= input$date_range[[1]] &
+          Date <= input$date_range[[2]]
       ) %>%
       summarise((last(value) - first(value)) / first(value) * 100)
     med_size <- paste0(round(mean(mediansize[[2]])), " %")
@@ -628,8 +655,8 @@ server <- function(input, output) {
     mediansize %>%  # creating plot after file is selected.
       filter(
         category %in% input$category3,
-        Date >= input$date_range3[[1]] &
-          Date <= input$date_range3[[2]]
+        Date >= input$date_range[[1]] &
+          Date <= input$date_range[[2]]
       ) %>%
       ggplot(aes(x = Date, y = value, colour = category)) +
       geom_line() +
@@ -667,8 +694,8 @@ server <- function(input, output) {
       group_by(category) %>%
       filter(
         category %in% input$category3,
-        Date >= input$date_range3[[1]] &
-          Date <= input$date_range3[[2]]
+        Date >= input$date_range[[1]] &
+          Date <= input$date_range[[2]]
       ) %>%
       summarise(first(value))
     # taking the average percent of change if more than one neighborhood is selected
@@ -699,8 +726,8 @@ server <- function(input, output) {
       group_by(category) %>%
       filter(
         category %in% input$category3,
-        Date >= input$date_range3[[1]] &
-          Date <= input$date_range3[[2]]
+        Date >= input$date_range[[1]] &
+          Date <= input$date_range[[2]]
       ) %>%
       summarise(last(value))
     # taking the average percent of change if more than one neighborhood is selected
@@ -728,8 +755,8 @@ server <- function(input, output) {
       group_by(category) %>%
       filter(
         category %in% input$category3,
-        Date >= input$date_range3[[1]] &
-          Date <= input$date_range3[[2]]
+        Date >= input$date_range[[1]] &
+          Date <= input$date_range[[2]]
       ) %>%
       summarise((last(value) - first(value)) / first(value) * 100)
     med_size <- paste0(round(mean(mediansize[[2]])), " %")
