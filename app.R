@@ -72,16 +72,17 @@ ui <- dashboardPage(
         icon = icon("home", lib = "glyphicon")
       ),
       menuItem(
+        "Percent of Listings Discounted",
+        tabName = "discounts",
+        icon = icon("home", lib = "glyphicon")
+      ),
+      menuItem(
         "Amount of Listings",
         tabName = "listings",
         icon = icon("home", lib = "glyphicon")
       ),
       
-      menuItem(
-        "Percent of Listings Discounted",
-        tabName = "discounts",
-        icon = icon("home", lib = "glyphicon")
-      ),
+
       dateRangeInput(
         'date_range',
         h3("Date range"),
@@ -131,7 +132,7 @@ ui <- dashboardPage(
                price.   Each of these three pages has a line graph and three infoboxes.  The 
                infoboxes show the starting value, ending value and the amount of change over 
                the selected period of time.  The user can filter the data by apartment size, 
-               neighborhood and time frame.  More than neighborhoods can be selected for 
+               neighborhood and time frame.  More than one neighborhood can be selected for 
                situations where an apartment is located on the border of one or more 
                neighborhoods. The infoboxes will show the average of all neighborhoods selected."
               )
@@ -195,7 +196,65 @@ ui <- dashboardPage(
               )
             )),
     
-    # Third tab content number of listings on market ####
+ 
+    # Third tab content percent of discounted units ####
+    tabItem(tabName = "discounts",
+            fluidRow(
+              box(
+                width = '100%' ,
+                h3(align = "center",
+                   style = 'font-size:32px;',
+                   ""),
+                # doesnt look right.  Need to update
+                infoBoxOutput("startdiscBox"),
+                infoBoxOutput("enddiscBox"),
+                infoBoxOutput("changediscBox")
+              )
+            ),
+            fluidRow(
+              box(plotOutput("place3_plot", height = 350)),
+              box(
+                checkboxGroupInput(
+                  'category3',
+                  "Choose a neighborhood:",
+                  inline = TRUE,
+                  selected = "Flatiron" ,
+                  choices = list(
+                    "Battery Park City" = "Battery.Park.City",
+                    "Central Harlem" = "Central.Harlem",
+                    "Central Park South" = "Central.Park.South",
+                    "Chelsea" = "Chelsea",
+                    "Chinatown" = "Chinatown",
+                    "East Harlem" = "East.Harlem",
+                    "East Village" = "East.Village",
+                    "Financial District" = "Financial.District",
+                    "Flatiron" = "Flatiron",
+                    "Gramercy Park" = "Gramercy.Park",
+                    "Greenwich Village" = "Greenwich.Village",
+                    "Hamilton Heights" = "Hamilton.Heights",
+                    "Inwood" = "Inwood",
+                    "Little Italy" = "Little.Italy",
+                    "Lower East.Side" = "Lower.East.Side",
+                    "Midtown" = "Midtown",
+                    "Midtown East" = "Midtown.East",
+                    "Midtown South" = "Midtown.South",
+                    "Midtown West" = "Midtown.West",
+                    "Morningside Heights" = "Morningside.Heights",
+                    "Nolita" = "Nolita",
+                    "Roosevelt Island " = "Roosevelt.Island",
+                    "Soho" = "Soho",
+                    "Tribeca" = "Tribeca",
+                    "Upper East Side" = "Upper.East.Side",
+                    "Upper West Side" = 'Upper.West.Side',
+                    "Washington Heights" = "Washington.Heights",
+                    "West Harlem" = "West.Harlem",
+                    "West Village" = "West.Village"
+                  )
+                ),
+              )
+            )),
+    
+# Fourth tab content number of listings on market ####
     tabItem(tabName = "listings",
             fluidRow(
               box(
@@ -211,34 +270,6 @@ ui <- dashboardPage(
             ),
             fluidRow(
               box(plotOutput("place2_plot", height = 350)),
-              # box(
-              #   radioButtons(
-              #     "size2",
-              #     "Choose Apartment Size:",
-              #     inline = TRUE,
-              #     c(
-              #       "All Apartment Sizes" = "inventory_all_long",
-              #       "Studio" = "inventory_studio_long",
-              #       "One Bedroom" = "inventory_one_long",
-              #       "Two Bedroom" = "inventory_two_long",
-              #       "Three Plus More Bedrooms" = "inventory_three_long"
-              #       
-              #     )
-              #   )
-              # ),
-              # box(
-              #   dateRangeInput(
-              #     'date_range2',
-              #     h3("Date range"),
-              #     format = "mm/yyyy",
-              #     # pop up calendar still shows days instead of months  and years
-              #     start = date_min,
-              #     end = date_max,
-              #     min = date_min,
-              #     max = date_max
-              #   )
-              # ),
-              
               box(
                 # title = "Neighborhood",
                 checkboxGroupInput(
@@ -280,99 +311,9 @@ ui <- dashboardPage(
                   )
                 ),
               )
-            )),
-    # Fourth tab content percent of discounted units ####
-    tabItem(tabName = "discounts",
-            fluidRow(
-              box(
-                width = '100%' ,
-                h3(align = "center",
-                   style = 'font-size:32px;',
-                   ""),
-                # doesnt look right.  Need to update
-                infoBoxOutput("startdiscBox"),
-                infoBoxOutput("enddiscBox"),
-                infoBoxOutput("changediscBox")
-              )
-            ),
-            fluidRow(
-              box(plotOutput("place3_plot", height = 350)),
-              # box(
-              #   radioButtons(
-              #     "size3",
-              #     "Choose Apartment Size:",
-              #     inline = TRUE,
-              #     c(
-              #       "All Apartment Sizes" = "discount_all_long",
-              #       "Studio" = "discount_studio_long",
-              #       "One Bedroom" = "discount_one_long",
-              #       "Two Bedroom" = "discount_two_long",
-              #       "Three Plus More Bedrooms" = "discount_three_long"
-              #       
-              #     )
-              #   )
-              # ),
-              # box(
-              #   dateRangeInput(
-              #     'date_range3',
-              #     h3("Date range"),
-              #     format = "mm/yyyy",
-              #     # pop up calendar still shows days instead of months  and years
-              #     start = date_min,
-              #     end = date_max,
-              #     min = date_min,
-              #     max = date_max
-              #   )
-              # ),
-              
-              box(
-                # title = "Neighborhood",
-                checkboxGroupInput(
-                  'category3',
-                  "Choose a neighborhood:",
-                  inline = TRUE,
-                  selected = "Flatiron" ,
-                  choices = list(
-                    # created list by hand.  should of used a function?
-                    "Battery Park City" = "Battery.Park.City",
-                    "Central Harlem" = "Central.Harlem",
-                    "Central Park South" = "Central.Park.South",
-                    "Chelsea" = "Chelsea",
-                    "Chinatown" = "Chinatown",
-                    "East Harlem" = "East.Harlem",
-                    "East Village" = "East.Village",
-                    "Financial District" = "Financial.District",
-                    "Flatiron" = "Flatiron",
-                    "Gramercy Park" = "Gramercy.Park",
-                    "Greenwich Village" = "Greenwich.Village",
-                    "Hamilton Heights" = "Hamilton.Heights",
-                    "Inwood" = "Inwood",
-                    "Little Italy" = "Little.Italy",
-                    "Lower East.Side" = "Lower.East.Side",
-                    "Midtown" = "Midtown",
-                    "Midtown East" = "Midtown.East",
-                    "Midtown South" = "Midtown.South",
-                    "Midtown West" = "Midtown.West",
-                    "Morningside Heights" = "Morningside.Heights",
-                    "Nolita" = "Nolita",
-                    "Roosevelt Island " = "Roosevelt.Island",
-                    "Soho" = "Soho",
-                    "Tribeca" = "Tribeca",
-                    "Upper East Side" = "Upper.East.Side",
-                    "Upper West Side" = 'Upper.West.Side',
-                    "Washington Heights" = "Washington.Heights",
-                    "West Harlem" = "West.Harlem",
-                    "West Village" = "West.Village"
-                  )
-                ),
-              )
             ))
   ))
 )
-
-
-
-
 
 #  SERVER ####
 
@@ -390,8 +331,6 @@ server <- function(input, output) {
         three = avg_rent_three_long,
         avg_rent_all_long
       )
-    
-    
     mediansize %>%  # creating plot after file is selected.
       filter(category %in% input$category,
              Date >= input$date_range[[1]] &
@@ -491,7 +430,134 @@ server <- function(input, output) {
     med_change_box()
   })
   
-  # Line chart for inventory (third tab) ####
+
+  
+  
+  # Line chart for discounted listings (third tab) ####
+  place3_plot <- reactive({
+    mediansize <-
+      switch(
+        # radio buttons in UI select file to be used for ggplot graph
+        input$size,
+        all = discount_all_long,
+        studio = discount_studio_long,
+        one = discount_one_long,
+        two = discount_two_long,
+        three = discount_three_long,
+        discount_all_long
+      )
+    mediansize %>%  # creating plot after file is selected.
+      filter(
+        category %in% input$category3,
+        Date >= input$date_range[[1]] &
+          Date <= input$date_range[[2]]
+      ) %>%
+      ggplot(aes(x = Date, y = value, colour = category)) +
+      geom_line() +
+      scale_colour_hue(name = "Neighborhood",      # Set legend title
+                       l = 30) +
+      xlab("") +
+      ylab("Percent of Listings Discounted") +
+      scale_y_continuous(labels = scales::percent) +
+      theme(axis.text.x = element_text(angle = 60, hjust = 1))
+  })
+  output$place3_plot <- renderPlot({
+    #rendering plot
+    place3_plot()
+  })
+  
+
+  # Info boxes for discounted listings (third tab) ####
+  disc_start_box <- reactive({
+    mediansize <-
+      switch(
+        # radio buttons in UI select file to be used for ggplot graph
+        input$size,
+        all = discount_all_long,
+        studio = discount_studio_long,
+        one = discount_one_long,
+        two = discount_two_long,
+        three = discount_three_long,
+        discount_all_long
+      )
+    mediansize <- mediansize %>%
+      group_by(category) %>%
+      filter(
+        category %in% input$category3,
+        Date >= input$date_range[[1]] &
+          Date <= input$date_range[[2]]
+      ) %>%
+      summarise(first(value))
+    # taking the average percent of change if more than one neighborhood is selected
+    med_size <- paste0(percent(mean(mediansize[[2]])))
+    infoBox("Starting Discounted Listings",
+            med_size,
+            icon = icon("calculator"))
+    
+  })
+  output$startdiscBox <- renderInfoBox({
+    disc_start_box()
+  })
+  
+  
+  disc_end_box <- reactive({
+    mediansize <-
+      switch(
+        # radio buttons in UI select file to be used for ggplot graph
+        input$size,
+        all = discount_all_long,
+        studio = discount_studio_long,
+        one = discount_one_long,
+        two = discount_two_long,
+        three = discount_three_long,
+        discount_all_long
+      )
+    mediansize <- mediansize %>%
+      group_by(category) %>%
+      filter(
+        category %in% input$category3,
+        Date >= input$date_range[[1]] &
+          Date <= input$date_range[[2]]
+      ) %>%
+      summarise(last(value))
+    # taking the average percent of change if more than one neighborhood is selected
+    med_size <- percent(mean(mediansize[[2]]))
+    infoBox("Ending Discounted Units", med_size, icon = icon("calculator"))
+    
+  })
+  output$enddiscBox <- renderInfoBox({
+    disc_end_box()
+  })
+  
+  disc_change_box <- reactive({
+    mediansize <-
+      switch(
+        # radio buttons in UI select file to be used for ggplot graph
+        input$size,
+        all = discount_all_long,
+        studio = discount_studio_long,
+        one = discount_one_long,
+        two = discount_two_long,
+        three = discount_three_long,
+        discount_all_long
+      )
+    mediansize <- mediansize %>%
+      group_by(category) %>%
+      filter(
+        category %in% input$category3,
+        Date >= input$date_range[[1]] &
+          Date <= input$date_range[[2]]
+      ) %>%
+      summarise((last(value) - first(value)) / first(value) * 100)
+    med_size <- paste0(round(mean(mediansize[[2]])), " %")
+    infoBox("Change", med_size, icon = icon("calculator"))
+    
+  })
+  output$changediscBox <- renderInfoBox({
+    disc_change_box()
+  })
+  
+  # Line chart for inventory (fourth tab) ####
   place2_plot <- reactive({
     mediansize <-
       switch(
@@ -524,9 +590,7 @@ server <- function(input, output) {
     place2_plot()
   })
   
-  
-  
-  # Info boxes for inventory (third tab) ####
+  # Info boxes for inventory (fourth tab) ####
   list_start_box <- reactive({
     mediansize <-
       switch(
@@ -616,133 +680,6 @@ server <- function(input, output) {
   
   
   
-  # Line chart for discounted listings (fourth tab) ####
-  place3_plot <- reactive({
-    mediansize <-
-      switch(
-        # radio buttons in UI select file to be used for ggplot graph
-        input$size,
-        all = discount_all_long,
-        studio = discount_studio_long,
-        one = discount_one_long,
-        two = discount_two_long,
-        three = discount_three_long,
-        discount_all_long
-      )
-    mediansize %>%  # creating plot after file is selected.
-      filter(
-        category %in% input$category3,
-        Date >= input$date_range[[1]] &
-          Date <= input$date_range[[2]]
-      ) %>%
-      ggplot(aes(x = Date, y = value, colour = category)) +
-      geom_line() +
-      scale_colour_hue(name = "Neighborhood",      # Set legend title
-                       l = 30) +
-      xlab("") +
-      ylab("Percent of Listings Discounted") +
-      scale_y_continuous(labels = scales::percent) +
-      theme(axis.text.x = element_text(angle = 60, hjust = 1))
-  })
-  output$place3_plot <- renderPlot({
-    #rendering plot
-    place3_plot()
-  })
-  
-  
-  
-  
-  
-  
-  # Info boxes for discounted listings (fourth tab) ####
-  disc_start_box <- reactive({
-    mediansize <-
-      switch(
-        # radio buttons in UI select file to be used for ggplot graph
-        input$size,
-        all = discount_all_long,
-        studio = discount_studio_long,
-        one = discount_one_long,
-        two = discount_two_long,
-        three = discount_three_long,
-        discount_all_long
-      )
-    mediansize <- mediansize %>%
-      group_by(category) %>%
-      filter(
-        category %in% input$category3,
-        Date >= input$date_range[[1]] &
-          Date <= input$date_range[[2]]
-      ) %>%
-      summarise(first(value))
-    # taking the average percent of change if more than one neighborhood is selected
-    med_size <- paste0(percent(mean(mediansize[[2]])))
-    infoBox("Starting Discounted Listings",
-            med_size,
-            icon = icon("calculator"))
-    
-  })
-  output$startdiscBox <- renderInfoBox({
-    disc_start_box()
-  })
-  
-  
-  disc_end_box <- reactive({
-    mediansize <-
-      switch(
-        # radio buttons in UI select file to be used for ggplot graph
-        input$size,
-        all = discount_all_long,
-        studio = discount_studio_long,
-        one = discount_one_long,
-        two = discount_two_long,
-        three = discount_three_long,
-        discount_all_long
-      )
-    mediansize <- mediansize %>%
-      group_by(category) %>%
-      filter(
-        category %in% input$category3,
-        Date >= input$date_range[[1]] &
-          Date <= input$date_range[[2]]
-      ) %>%
-      summarise(last(value))
-    # taking the average percent of change if more than one neighborhood is selected
-    med_size <- percent(mean(mediansize[[2]]))
-    infoBox("Ending Discounted Units", med_size, icon = icon("calculator"))
-    
-  })
-  output$enddiscBox <- renderInfoBox({
-    disc_end_box()
-  })
-  
-  disc_change_box <- reactive({
-    mediansize <-
-      switch(
-        # radio buttons in UI select file to be used for ggplot graph
-        input$size,
-        all = discount_all_long,
-        studio = discount_studio_long,
-        one = discount_one_long,
-        two = discount_two_long,
-        three = discount_three_long,
-        discount_all_long
-      )
-    mediansize <- mediansize %>%
-      group_by(category) %>%
-      filter(
-        category %in% input$category3,
-        Date >= input$date_range[[1]] &
-          Date <= input$date_range[[2]]
-      ) %>%
-      summarise((last(value) - first(value)) / first(value) * 100)
-    med_size <- paste0(round(mean(mediansize[[2]])), " %")
-    infoBox("Change", med_size, icon = icon("calculator"))
-    
-  })
-  output$changediscBox <- renderInfoBox({
-    disc_change_box()
-  })
   # server side to render map image ####
   output$map_img <- renderImage({
     list(src = "./www/map5.gif",
@@ -753,13 +690,6 @@ server <- function(input, output) {
   }, deleteFile = F) 
   
 }
-
-
-
-
-
-  
-
 
 # shinyApp(ui, server)
 shinyApp(ui = ui, server = server)
