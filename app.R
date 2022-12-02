@@ -159,7 +159,7 @@ ui <- dashboardPage(
                   'category',
                   "Choose a neighborhood:",
                   inline = TRUE,
-                  selected = "Flatiron" ,
+                  selected = "East.Village" ,
                   choices = list(
                     # created list by hand.  should of used a function?
                     "Battery Park City" = "Battery.Park.City",
@@ -176,7 +176,7 @@ ui <- dashboardPage(
                     "Hamilton Heights" = "Hamilton.Heights",
                     "Inwood" = "Inwood",
                     "Little Italy" = "Little.Italy",
-                    "Lower East.Side" = "Lower.East.Side",
+                    "Lower East Side" = "Lower.East.Side",
                     "Midtown" = "Midtown",
                     "Midtown East" = "Midtown.East",
                     "Midtown South" = "Midtown.South",
@@ -218,7 +218,7 @@ ui <- dashboardPage(
                   'category3',
                   "Choose a neighborhood:",
                   inline = TRUE,
-                  selected = "Flatiron" ,
+                  selected = "East.Village" ,
                   choices = list(
                     "Battery Park City" = "Battery.Park.City",
                     "Central Harlem" = "Central.Harlem",
@@ -234,7 +234,7 @@ ui <- dashboardPage(
                     "Hamilton Heights" = "Hamilton.Heights",
                     "Inwood" = "Inwood",
                     "Little Italy" = "Little.Italy",
-                    "Lower East.Side" = "Lower.East.Side",
+                    "Lower East Side" = "Lower.East.Side",
                     "Midtown" = "Midtown",
                     "Midtown East" = "Midtown.East",
                     "Midtown South" = "Midtown.South",
@@ -276,7 +276,7 @@ ui <- dashboardPage(
                   'category2',
                   "Choose a neighborhood:",
                   inline = TRUE,
-                  selected = "Flatiron" ,
+                  selected = "East.Village" ,
                   choices = list(
                     # created list by hand.  should of used a function?
                     "Battery Park City" = "Battery.Park.City",
@@ -293,7 +293,7 @@ ui <- dashboardPage(
                     "Hamilton Heights" = "Hamilton.Heights",
                     "Inwood" = "Inwood",
                     "Little Italy" = "Little.Italy",
-                    "Lower East.Side" = "Lower.East.Side",
+                    "Lower East Side" = "Lower.East.Side",
                     "Midtown" = "Midtown",
                     "Midtown East" = "Midtown.East",
                     "Midtown South" = "Midtown.South",
@@ -336,7 +336,7 @@ server <- function(input, output) {
              Date >= input$date_range[[1]] &
                Date <= input$date_range[[2]]) %>%
       ggplot(aes(x = Date, y = value, colour = category)) +
-      geom_line(size = .5) +
+      geom_line() +
       scale_colour_hue(name = "Neighborhood",    # Set legend title
                        l = 30) +
       ylim(0,NA) +

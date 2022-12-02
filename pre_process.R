@@ -532,4 +532,43 @@ save(discount_three_long ,file="discount_three_long.Rda")
 
 
 
+avg_rent_all_long %>%  # creating plot after file is selected.
+  filter(category == "Manhattan",
+         Date >= "2020-01-01" &
+           Date <= "2020-12-01") %>% 
+  ggplot(aes(x = Date, y = value, colour = category)) +
+  geom_line() +
+  scale_colour_hue(name = "",    # Set legend title
+                   l = 30) +
+  # ylim(0,NA) +
+  xlab("") +
+  ylab("Median Asking Rent") +
+  theme(axis.text.x = element_text(angle = 60, hjust = 1))
 
+inventory_all_long %>%  # creating plot after file is selected.
+  filter(category == "Manhattan",
+         Date >= "2019-10-01" &
+           Date <= "2022-10-01") %>% 
+  ggplot(aes(x = Date, y = value, colour = category)) +
+  geom_line() +
+  scale_colour_hue(name = "",    # Set legend title
+                   l = 30) +
+ ylim(0,NA) +
+  xlab("") +
+  ylab("Listings Available") +
+  theme(axis.text.x = element_text(angle = 60, hjust = 1))
+
+
+discount_all_long  %>%  # creating plot after file is selected.
+  filter(category == "Manhattan",
+         Date >= "2020-01-01" &
+           Date <= "2020-12-01") %>% 
+  ggplot(aes(x = Date, y = value, colour = category)) +
+  geom_line() +
+  scale_colour_hue(name = "",    # Set legend title
+                   l = 30) +
+  scale_y_continuous(labels = scales::percent) +
+  ylim(0,NA) +
+  xlab("") +
+  ylab("Percent of Listings Discounted") +
+  theme(axis.text.x = element_text(angle = 60, hjust = 1))
