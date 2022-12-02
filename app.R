@@ -1,7 +1,5 @@
 
 
-
-
 # using one file for shiny app instead of 3(global, ui and server)
 
 # Global ####
@@ -39,8 +37,6 @@ load("avg_rent_three_long.Rda")
 load("inventory_three_long.Rda")
 load("discount_three_long.Rda")
 
-#  avg_rent_studio_long <- avg_rent_studio_long %>% fill(c, .direction = 'up')
-
 
 # Creating function to convert numbers to percentage
 percent <- function(x,
@@ -73,9 +69,7 @@ ui <- dashboardPage(
       menuItem(
         "Median Asking Rent",
         tabName = "median",
-        icon = icon("home", lib = "glyphicon"),
-        selected = TRUE  # app opens on main page which is currently all apartment sizes
-        
+        icon = icon("home", lib = "glyphicon")
       ),
       menuItem(
         "Amount of Listings",
@@ -93,31 +87,42 @@ ui <- dashboardPage(
         h3("Date range"),
         format = "mm/yyyy",
         startview = 'year',
-        # pop up calendar still shows days instead of months  and years
         start = date_min,
         end = date_max,
         min = date_min,
         max = date_max
+      ),
+      radioButtons(
+        "size",
+        "Choose Apartment Size:",
+        c(
+          "All Apartment Sizes" = "all",
+          "Studio" = "studio",
+          "One Bedroom" = "one",
+          "Two Bedroom" = "two",
+          "Three or More Bedrooms" = "three"
+          
+        )
       )
       
     )
   ),
-  ## Body content
+  ## Body content ####
   dashboardBody(tabItems(
     # First tab content with Info ####
     tabItem(tabName = "info",
             fluidPage(
+
+              box(p("Welcome the Manhattan Rental Trends App", style = 'font-size:42px;'), 
+                "Coded by: Jason Phillip <Jason.Phillip@gmail.com>" , style = 'font-size:20px;', align = "center", width = 12),
               box(
-                title = "Welcome the Manhattan Rental Trends App. 
-                Coded by: Jason Phillip <Jason.Phillip@gmail.com>",
                 width = 12,
-               # background = "light-blue",
                 "The purpose of this app is to allow landlords and brokers to view how
                the rental market conditions have changed over a period of time.  When an
                apartment lease is up for renewal, landlords and brokers need data so they 
                can price the apartment correctly. Most residential leases are only for a year, 
                however I included a longer time frame for situations where the rent has not 
-               been changed for several years."  ,
+               been changed for several years." ,  style = 'font-size:20px;', align = "center",
                 imageOutput("map_img"),
                 "The tabs on the left allow the user to view three different trends over a 
                selected period of time.   The first tab brings the user to a page that shows 
@@ -130,12 +135,7 @@ ui <- dashboardPage(
                situations where an apartment is located on the border of one or more 
                neighborhoods. The infoboxes will show the average of all neighborhoods selected."
               )
-              # ,
-              # box(title = "Map of Manhattan Neighborhoods",
-              #     imageOutput("map_img"))
             )
-
-
             ),
     # Second tab content with graphs and infoboxes showing median rent ####
     tabItem(tabName = "median",
@@ -151,34 +151,7 @@ ui <- dashboardPage(
             ),
             fluidRow(
               box(plotOutput("place_plot", height = 350)),
-              box(radioButtons(
-                "size",
-                "Choose Apartment Size:",
-                inline = TRUE,
-                c(
-                  "All Apartment Sizes" = "avg_rent_all_long",
-                  "Studio" = "avg_rent_studio_long",
-                  "One Bedroom" = "avg_rent_one_long",
-                  "Two Bedroom" = "avg_rent_two_long",
-                  "Three Plus More Bedrooms" = "avg_rent_three_long"
-                )
-              )),
-              # box(
-              #   dateRangeInput(
-              #     'date_range',
-              #     h3("Date range"),
-              #     format = "mm/yyyy",
-              #     # pop up calendar still shows days instead of months  and years
-              #     start = date_min,
-              #     end = date_max,
-              #     min = date_min,
-              #     max = date_max
-              #   )
-              # ),
-              # view: 'months',
-              # minView: 'months',
-              # dateFormat: 'MMMM yyyy'
-              
+
               box(
              #   title = "Neighborhood",
                 checkboxGroupInput(
@@ -238,21 +211,21 @@ ui <- dashboardPage(
             ),
             fluidRow(
               box(plotOutput("place2_plot", height = 350)),
-              box(
-                radioButtons(
-                  "size2",
-                  "Choose Apartment Size:",
-                  inline = TRUE,
-                  c(
-                    "All Apartment Sizes" = "inventory_all_long",
-                    "Studio" = "inventory_studio_long",
-                    "One Bedroom" = "inventory_one_long",
-                    "Two Bedroom" = "inventory_two_long",
-                    "Three Plus More Bedrooms" = "inventory_three_long"
-                    
-                  )
-                )
-              ),
+              # box(
+              #   radioButtons(
+              #     "size2",
+              #     "Choose Apartment Size:",
+              #     inline = TRUE,
+              #     c(
+              #       "All Apartment Sizes" = "inventory_all_long",
+              #       "Studio" = "inventory_studio_long",
+              #       "One Bedroom" = "inventory_one_long",
+              #       "Two Bedroom" = "inventory_two_long",
+              #       "Three Plus More Bedrooms" = "inventory_three_long"
+              #       
+              #     )
+              #   )
+              # ),
               # box(
               #   dateRangeInput(
               #     'date_range2',
@@ -267,7 +240,7 @@ ui <- dashboardPage(
               # ),
               
               box(
-                title = "Neighborhood",
+                # title = "Neighborhood",
                 checkboxGroupInput(
                   'category2',
                   "Choose a neighborhood:",
@@ -324,21 +297,21 @@ ui <- dashboardPage(
             ),
             fluidRow(
               box(plotOutput("place3_plot", height = 350)),
-              box(
-                radioButtons(
-                  "size3",
-                  "Choose Apartment Size:",
-                  inline = TRUE,
-                  c(
-                    "All Apartment Sizes" = "discount_all_long",
-                    "Studio" = "discount_studio_long",
-                    "One Bedroom" = "discount_one_long",
-                    "Two Bedroom" = "discount_two_long",
-                    "Three Plus More Bedrooms" = "discount_three_long"
-                    
-                  )
-                )
-              ),
+              # box(
+              #   radioButtons(
+              #     "size3",
+              #     "Choose Apartment Size:",
+              #     inline = TRUE,
+              #     c(
+              #       "All Apartment Sizes" = "discount_all_long",
+              #       "Studio" = "discount_studio_long",
+              #       "One Bedroom" = "discount_one_long",
+              #       "Two Bedroom" = "discount_two_long",
+              #       "Three Plus More Bedrooms" = "discount_three_long"
+              #       
+              #     )
+              #   )
+              # ),
               # box(
               #   dateRangeInput(
               #     'date_range3',
@@ -353,7 +326,7 @@ ui <- dashboardPage(
               # ),
               
               box(
-                title = "Neighborhood",
+                # title = "Neighborhood",
                 checkboxGroupInput(
                   'category3',
                   "Choose a neighborhood:",
@@ -410,11 +383,11 @@ server <- function(input, output) {
       switch(
         # radio buttons in UI select file to be used for ggplot graph
         input$size,
-        avg_rent_all_long = avg_rent_all_long,
-        avg_rent_studio_long = avg_rent_studio_long,
-        avg_rent_one_long = avg_rent_one_long,
-        avg_rent_two_long = avg_rent_two_long,
-        avg_rent_three_long = avg_rent_three_long,
+        all = avg_rent_all_long,
+        studio = avg_rent_studio_long,
+        one = avg_rent_one_long,
+        two = avg_rent_two_long,
+        three = avg_rent_three_long,
         avg_rent_all_long
       )
     
@@ -425,7 +398,7 @@ server <- function(input, output) {
                Date <= input$date_range[[2]]) %>%
       ggplot(aes(x = Date, y = value, colour = category)) +
       geom_line(size = .5) +
-      scale_colour_hue(name = "Neighborhood",      # Set legend title
+      scale_colour_hue(name = "Neighborhood",    # Set legend title
                        l = 30) +
       ylim(0,NA) +
       xlab("") +
@@ -444,11 +417,11 @@ server <- function(input, output) {
       switch(
         # radio buttons in UI select file to be used for ggplot graph
         input$size,
-        avg_rent_all_long = avg_rent_all_long,
-        avg_rent_studio_long = avg_rent_studio_long,
-        avg_rent_one_long = avg_rent_one_long,
-        avg_rent_two_long = avg_rent_two_long,
-        avg_rent_three_long = avg_rent_three_long,
+        all = avg_rent_all_long,
+        studio = avg_rent_studio_long,
+        one = avg_rent_one_long,
+        two = avg_rent_two_long,
+        three = avg_rent_three_long,
         avg_rent_all_long
       )
     mediansize <- mediansize %>%
@@ -470,11 +443,11 @@ server <- function(input, output) {
       switch(
         # radio buttons in UI select file to be used for ggplot graph
         input$size,
-        avg_rent_all_long = avg_rent_all_long,
-        avg_rent_studio_long = avg_rent_studio_long,
-        avg_rent_one_long = avg_rent_one_long,
-        avg_rent_two_long = avg_rent_two_long,
-        avg_rent_three_long = avg_rent_three_long,
+        all = avg_rent_all_long,
+        studio = avg_rent_studio_long,
+        one = avg_rent_one_long,
+        two = avg_rent_two_long,
+        three = avg_rent_three_long,
         avg_rent_all_long
       )
     mediansize <- mediansize %>%
@@ -497,11 +470,11 @@ server <- function(input, output) {
       switch(
         # radio buttons in UI select file to be used for ggplot graph
         input$size,
-        avg_rent_all_long = avg_rent_all_long,
-        avg_rent_studio_long = avg_rent_studio_long,
-        avg_rent_one_long = avg_rent_one_long,
-        avg_rent_two_long = avg_rent_two_long,
-        avg_rent_three_long = avg_rent_three_long,
+        all = avg_rent_all_long,
+        studio = avg_rent_studio_long,
+        one = avg_rent_one_long,
+        two = avg_rent_two_long,
+        three = avg_rent_three_long,
         avg_rent_all_long
       )
     mediansize <- mediansize %>%
@@ -523,12 +496,12 @@ server <- function(input, output) {
     mediansize <-
       switch(
         # radio buttons in UI select file to be used for ggplot graph
-        input$size2,
-        inventory_all_long = inventory_all_long,
-        inventory_studio_long = inventory_studio_long,
-        inventory_one_long = inventory_one_long,
-        inventory_two_long = inventory_two_long,
-        inventory_three_long = inventory_three_long,
+        input$size,
+        all = inventory_all_long,
+        studio = inventory_studio_long,
+        one = inventory_one_long,
+        two = inventory_two_long,
+        three = inventory_three_long,
         inventory_all_long
       )
     mediansize %>%  # creating plot after file is selected.
@@ -558,12 +531,12 @@ server <- function(input, output) {
     mediansize <-
       switch(
         # radio buttons in UI select file to be used for ggplot graph
-        input$size2,
-        inventory_all_long = inventory_all_long,
-        inventory_studio_long = inventory_studio_long,
-        inventory_one_long = inventory_one_long,
-        inventory_two_long = inventory_two_long,
-        inventory_three_long = inventory_three_long,
+        input$size,
+        all = inventory_all_long,
+        studio = inventory_studio_long,
+        one = inventory_one_long,
+        two = inventory_two_long,
+        three = inventory_three_long,
         inventory_all_long
       )
     mediansize <- mediansize %>%
@@ -588,12 +561,12 @@ server <- function(input, output) {
     mediansize <-
       switch(
         # radio buttons in UI select file to be used for ggplot graph
-        input$size2,
-        inventory_all_long = inventory_all_long,
-        inventory_studio_long = inventory_studio_long,
-        inventory_one_long = inventory_one_long,
-        inventory_two_long = inventory_two_long,
-        inventory_three_long = inventory_three_long,
+        input$size,
+        all = inventory_all_long,
+        studio = inventory_studio_long,
+        one = inventory_one_long,
+        two = inventory_two_long,
+        three = inventory_three_long,
         inventory_all_long
       )
     mediansize <- mediansize %>%
@@ -617,12 +590,12 @@ server <- function(input, output) {
     mediansize <-
       switch(
         # radio buttons in UI select file to be used for ggplot graph
-        input$size2,
-        inventory_all_long = inventory_all_long,
-        inventory_studio_long = inventory_studio_long,
-        inventory_one_long = inventory_one_long,
-        inventory_two_long = inventory_two_long,
-        inventory_three_long = inventory_three_long,
+        input$size,
+        all = inventory_all_long,
+        studio = inventory_studio_long,
+        one = inventory_one_long,
+        two = inventory_two_long,
+        three = inventory_three_long,
         inventory_all_long
       )
     mediansize <- mediansize %>%
@@ -648,12 +621,12 @@ server <- function(input, output) {
     mediansize <-
       switch(
         # radio buttons in UI select file to be used for ggplot graph
-        input$size3,
-        discount_all_long = discount_all_long,
-        discount_studio_long = discount_studio_long,
-        discount_one_long = discount_one_long,
-        discount_two_long = discount_two_long,
-        discount_three_long = discount_three_long,
+        input$size,
+        all = discount_all_long,
+        studio = discount_studio_long,
+        one = discount_one_long,
+        two = discount_two_long,
+        three = discount_three_long,
         discount_all_long
       )
     mediansize %>%  # creating plot after file is selected.
@@ -666,7 +639,6 @@ server <- function(input, output) {
       geom_line() +
       scale_colour_hue(name = "Neighborhood",      # Set legend title
                        l = 30) +
-      ylim(0,NA) +
       xlab("") +
       ylab("Percent of Listings Discounted") +
       scale_y_continuous(labels = scales::percent) +
@@ -687,12 +659,12 @@ server <- function(input, output) {
     mediansize <-
       switch(
         # radio buttons in UI select file to be used for ggplot graph
-        input$size3,
-        discount_all_long = discount_all_long,
-        discount_studio_long = discount_studio_long,
-        discount_one_long = discount_one_long,
-        discount_two_long = discount_two_long,
-        discount_three_long = discount_three_long,
+        input$size,
+        all = discount_all_long,
+        studio = discount_studio_long,
+        one = discount_one_long,
+        two = discount_two_long,
+        three = discount_three_long,
         discount_all_long
       )
     mediansize <- mediansize %>%
@@ -719,12 +691,12 @@ server <- function(input, output) {
     mediansize <-
       switch(
         # radio buttons in UI select file to be used for ggplot graph
-        input$size3,
-        discount_all_long = discount_all_long,
-        discount_studio_long = discount_studio_long,
-        discount_one_long = discount_one_long,
-        discount_two_long = discount_two_long,
-        discount_three_long = discount_three_long,
+        input$size,
+        all = discount_all_long,
+        studio = discount_studio_long,
+        one = discount_one_long,
+        two = discount_two_long,
+        three = discount_three_long,
         discount_all_long
       )
     mediansize <- mediansize %>%
@@ -748,12 +720,12 @@ server <- function(input, output) {
     mediansize <-
       switch(
         # radio buttons in UI select file to be used for ggplot graph
-        input$size3,
-        discount_all_long = discount_all_long,
-        discount_studio_long = discount_studio_long,
-        discount_one_long = discount_one_long,
-        discount_two_long = discount_two_long,
-        discount_three_long = discount_three_long,
+        input$size,
+        all = discount_all_long,
+        studio = discount_studio_long,
+        one = discount_one_long,
+        two = discount_two_long,
+        three = discount_three_long,
         discount_all_long
       )
     mediansize <- mediansize %>%
@@ -774,7 +746,7 @@ server <- function(input, output) {
   # server side to render map image ####
   output$map_img <- renderImage({
     list(src = "./www/map5.gif",
-         width = "25%",
+         width = "20%",
          height = "100%",
          style ="display: block; margin-left: auto; margin-right: auto;")
     
