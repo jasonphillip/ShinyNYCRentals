@@ -15,7 +15,6 @@ library(stringr)
 library(tidyverse)
 library(ggplot2)
 
-
 # loading dataframes created in pre_process.  Will need to use SQLite in future update
 load("./ProcessedData/avg_rent_all_long.Rda")
 load("./ProcessedData/inventory_all_long.Rda")
