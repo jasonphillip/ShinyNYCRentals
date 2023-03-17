@@ -2,7 +2,7 @@
 
 
 
-# The below is used to import manipulate the data.  The dataframe is then stored 
+# The below is used to import and manipulate the data.  The dataframe is then stored 
 #  as an R dataframe so their is less processing for the shiny app
 
 
@@ -22,553 +22,119 @@ library(tidyverse)
 # Set working directory  ####
 
 
-setwd("~/Desktop/NYCDS_Bootcamp/ShinyNYCRentals")
+setwd("~/Desktop/NYCDS_Bootcamp/Data Analysis with R/Shiny/ShinyNYCRentals")
+
+
+
+# Creating a function because I have multiple datasets to transform
+process_rent_data <- function(rent_data) {
+  
+  # Filter files by removing neighborhood names no longer used and narrow down the date
+  rent_data <- rent_data %>%
+    filter(Borough == 'Manhattan' & areaName != 'Civic Center' & areaName != 'Marble Hill') %>%
+    select(areaName, X2014.01:X2022.10)
+  
+  # Transpose columns and rows and make the dates as observations instead of variables
+  rent_datat <- data.frame(t(rent_data[-1]))
+  colnames(rent_datat) <- rent_data[, 1]
+  
+  # Giving a name to the first column
+  rent_datat <- tibble::rownames_to_column(rent_datat, "Date")
+  
+  # Remove all the spaces in neighborhood names and replace with a dot(.)
+  rent_datat <- rent_datat %>% rename_with(make.names)
+  
+  # Change date from X2017.01 to 01.2017.01 to allow date format(day.year.month)
+  rent_datat <- rent_datat %>% mutate(across('Date', str_replace, 'X', '01.'))
+  
+  # Change Date column to date format
+  rent_datat$Date <- as.Date(rent_datat$Date, "%d.%Y.%m")
+  
+  # Fill NA's and remove columns with no data
+  rent_datat <- rent_datat %>%
+    fill(All.Downtown:West.Village, .direction = 'up') %>%
+    fill(All.Downtown:West.Village, .direction = 'down') %>%
+    select(-Stuyvesant.Town.PCV)
+  
+  # Convert to long dataset which works better for ggplot with multiple lines
+  rent_datat <- rent_datat %>%
+    pivot_longer(cols = -Date, names_to = "category", values_to = "value")
+  
+  return(rent_datat)
+}
+
+
+
 
 
 # read files ####
-median_rent_all <- read.csv('./Data/AllSizes/medianAskingRent_All.csv', header = TRUE)
-
-inventory_all <- read.csv('./Data/AllSizes/rentalInventory_All.csv', header = TRUE)
-
-discount_all <- read.csv('./Data/AllSizes/discountShare_All.csv', header = TRUE)
+median_rent_all <- read.csv('./Data/All/medianAskingRent_All.csv', header = TRUE)
+inventory_all <- read.csv('./Data/All/rentalInventory_All.csv', header = TRUE)
+discount_all <- read.csv('./Data/All/discountShare_All.csv', header = TRUE)
 
 median_rent_studio <- read.csv('./Data/Studio/medianAskingRent_Studio.csv', header = TRUE)
-
 inventory_studio <- read.csv('./Data/Studio/rentalInventory_Studio.csv', header = TRUE)
-
 discount_studio <- read.csv('./Data/Studio/discountShare_Studio.csv', header = TRUE)
 
 median_rent_one <- read.csv('./Data/OneBd/medianAskingRent_OneBd.csv', header = TRUE)
-
 inventory_one <- read.csv('./Data/OneBd/rentalInventory_OneBd.csv', header = TRUE)
-
 discount_one <- read.csv('./Data/OneBd/discountShare_OneBd.csv', header = TRUE)
 
 median_rent_two <- read.csv('./Data/TwoBd/medianAskingRent_TwoBd.csv', header = TRUE)
-
 inventory_two <- read.csv('./Data/TwoBd/rentalInventory_TwoBd.csv', header = TRUE)
-
 discount_two <- read.csv('./Data/TwoBd/discountShare_TwoBd.csv', header = TRUE)
 
 median_rent_three <- read.csv('./Data/ThreePlusBd/medianAskingRent_ThreePlusBd.csv', header = TRUE)
-
 inventory_three <- read.csv('./Data/ThreePlusBd/rentalInventory_ThreePlusBd.csv', header = TRUE)
-
 discount_three <- read.csv('./Data/ThreePlusBd/discountShare_ThreePlusBd.csv', header = TRUE) 
 
 
-# filter files by removing neighborhood names no longer used and narrow down the date ####
-median_rent_all_manhattan<- median_rent_all %>%
-  filter(Borough == 'Manhattan'  & areaName != 'Civic Center' & areaName != 'Marble Hill') %>%
-  select(areaName, X2014.01:X2022.10)     
 
-inventory_all_manhattan<- inventory_all %>%
-  filter(Borough == 'Manhattan' & areaName != 'Civic Center' & areaName != 'Marble Hill') %>%
-  select(areaName, X2014.01:X2022.10)     
+# Using function to process data
 
-discount_all_manhattan<- discount_all %>%
-  filter(Borough == 'Manhattan' & areaName != 'Civic Center' & areaName != 'Marble Hill') %>%
-  select(areaName, X2014.01:X2022.10)    
+avg_rent_all_long <- process_rent_data(median_rent_all)
+inventory_all_long <- process_rent_data(inventory_all)
+discount_all_long <- process_rent_data(discount_all)
 
-median_rent_studio<- median_rent_studio %>%
-  filter(Borough == 'Manhattan'  & areaName != 'Civic Center' & areaName != 'Marble Hill') %>%
-  select(areaName, X2014.01:X2022.10)     
+avg_rent_studio_long <- process_rent_data(median_rent_studio)
+inventory_studio_long <- process_rent_data(inventory_studio)
+discount_studio_long <- process_rent_data(discount_studio)
 
-inventory_studio<- inventory_studio %>%
-  filter(Borough == 'Manhattan' & areaName != 'Civic Center' & areaName != 'Marble Hill') %>%
-  select(areaName, X2014.01:X2022.10)     
+avg_rent_one_long <- process_rent_data(median_rent_one)
+inventory_one_long <- process_rent_data(inventory_one)
+discount_one_long <- process_rent_data(discount_one)
 
+avg_rent_two_long <- process_rent_data(median_rent_two)
+inventory_two_long <- process_rent_data(inventory_two)
+discount_two_long <- process_rent_data(discount_two)
 
-discount_studio<- discount_studio %>%
-  filter(Borough == 'Manhattan' & areaName != 'Civic Center' & areaName != 'Marble Hill') %>%
-  select(areaName, X2014.01:X2022.10)     
-
-median_rent_one<- median_rent_one %>%
-  filter(Borough == 'Manhattan'  & areaName != 'Civic Center' & areaName != 'Marble Hill') %>%
-  select(areaName, X2014.01:X2022.10)     
-
-inventory_one<- inventory_one %>%
-  filter(Borough == 'Manhattan' & areaName != 'Civic Center' & areaName != 'Marble Hill') %>%
-  select(areaName, X2014.01:X2022.10)     
-
-discount_one<- discount_one %>%
-  filter(Borough == 'Manhattan' & areaName != 'Civic Center' & areaName != 'Marble Hill') %>%
-  select(areaName, X2014.01:X2022.10)    
-
-median_rent_two<- median_rent_two %>%
-  filter(Borough == 'Manhattan'  & areaName != 'Civic Center' & areaName != 'Marble Hill') %>%
-  select(areaName, X2014.01:X2022.10)     
-
-inventory_two<- inventory_two %>%
-  filter(Borough == 'Manhattan' & areaName != 'Civic Center' & areaName != 'Marble Hill') %>%
-  select(areaName, X2014.01:X2022.10)     
-
-
-discount_two<- discount_two %>%
-  filter(Borough == 'Manhattan' & areaName != 'Civic Center' & areaName != 'Marble Hill') %>%
-  select(areaName, X2014.01:X2022.10) 
-
-median_rent_three<- median_rent_three %>%
-  filter(Borough == 'Manhattan'  & areaName != 'Civic Center' & areaName != 'Marble Hill') %>%
-  select(areaName, X2014.01:X2022.10)     
-
-inventory_three<- inventory_three %>%
-  filter(Borough == 'Manhattan' & areaName != 'Civic Center' & areaName != 'Marble Hill') %>%
-  select(areaName, X2014.01:X2022.10)     
-
-discount_three<- discount_three %>%
-  filter(Borough == 'Manhattan' & areaName != 'Civic Center' & areaName != 'Marble Hill') %>%
-  select(areaName, X2014.01:X2022.10)    
-
-
-# How to switch (transpose) columns and rows and make the dates as observations instead of variables ####
-median_rent_all_manhattant <- data.frame(t(median_rent_all_manhattan[-1]))
-colnames(median_rent_all_manhattant) <- median_rent_all_manhattan[, 1]
-
-inventory_all_manhattant <- data.frame(t(inventory_all_manhattan[-1]))
-colnames(inventory_all_manhattant) <- inventory_all_manhattan[, 1]
-
-discount_all_manhattant <- data.frame(t(discount_all_manhattan[-1]))
-colnames(discount_all_manhattant) <- discount_all_manhattan[, 1]
-
-median_rent_studiot <- data.frame(t(median_rent_studio[-1]))
-colnames(median_rent_studiot) <- median_rent_studio[, 1]
-
-inventory_studiot <- data.frame(t(inventory_studio[-1]))
-colnames(inventory_studiot) <- inventory_studio[, 1]
-
-discount_studiot <- data.frame(t(discount_studio[-1]))
-colnames(discount_studiot) <- discount_studio[, 1]
-
-median_rent_onet <- data.frame(t(median_rent_one[-1]))
-colnames(median_rent_onet) <- median_rent_one[, 1]
-
-inventory_onet <- data.frame(t(inventory_one[-1]))
-colnames(inventory_onet) <- inventory_one[, 1]
-
-discount_onet <- data.frame(t(discount_one[-1]))
-colnames(discount_onet) <- discount_one[, 1]
-
-median_rent_twot <- data.frame(t(median_rent_two[-1]))
-colnames(median_rent_twot) <- median_rent_two[, 1]
-
-inventory_twot <- data.frame(t(inventory_two[-1]))
-colnames(inventory_twot) <- inventory_two[, 1]
-
-discount_twot <- data.frame(t(discount_two[-1]))
-colnames(discount_twot) <- discount_two[, 1]
-
-
-median_rent_threet <- data.frame(t(median_rent_three[-1]))
-colnames(median_rent_threet) <- median_rent_three[, 1]
-
-inventory_threet <- data.frame(t(inventory_three[-1]))
-colnames(inventory_threet) <- inventory_three[, 1]
-
-discount_threet <- data.frame(t(discount_three[-1]))
-colnames(discount_threet) <- discount_three[, 1]
-
-
-
-# give a name to the first column ####
-
-median_rent_all_manhattant <- tibble::rownames_to_column(median_rent_all_manhattant, "Date")
-
-inventory_all_manhattant <- tibble::rownames_to_column(inventory_all_manhattant, "Date")
-
-discount_all_manhattant <- tibble::rownames_to_column(discount_all_manhattant, "Date")
-
-median_rent_studiot <- tibble::rownames_to_column(median_rent_studiot, "Date")
-
-inventory_studiot <- tibble::rownames_to_column(inventory_studiot, "Date")
-
-discount_studiot <- tibble::rownames_to_column(discount_studiot, "Date")
-
-median_rent_onet <- tibble::rownames_to_column(median_rent_onet, "Date")
-
-inventory_onet <- tibble::rownames_to_column(inventory_onet, "Date")
-
-discount_onet <- tibble::rownames_to_column(discount_onet, "Date")
-
-median_rent_twot <- tibble::rownames_to_column(median_rent_twot, "Date")
-
-inventory_twot <- tibble::rownames_to_column(inventory_twot, "Date")
-
-discount_twot <- tibble::rownames_to_column(discount_twot, "Date")
-
-median_rent_threet <- tibble::rownames_to_column(median_rent_threet, "Date")
-
-inventory_threet <- tibble::rownames_to_column(inventory_threet, "Date")
-
-discount_threet <- tibble::rownames_to_column(discount_threet, "Date")
-
-
-# Remove all the spaces in neighborhood names and replace with a dot(.) ####
-median_rent_all_manhattant <- median_rent_all_manhattant %>% rename_with(make.names)
-
-inventory_all_manhattant <- inventory_all_manhattant %>% rename_with(make.names)
-
-discount_all_manhattant <- discount_all_manhattant %>% rename_with(make.names)
-
-median_rent_studiot <- median_rent_studiot %>% rename_with(make.names)
-
-inventory_studiot <- inventory_studiot %>% rename_with(make.names)
-
-discount_studiot <- discount_studiot %>% rename_with(make.names)
-
-median_rent_onet <- median_rent_onet %>% rename_with(make.names)
-
-inventory_onet <- inventory_onet %>% rename_with(make.names)
-
-discount_onet <- discount_onet %>% rename_with(make.names)
-
-median_rent_twot <- median_rent_twot %>% rename_with(make.names)
-
-inventory_twot <- inventory_twot %>% rename_with(make.names)
-
-discount_twot <- discount_twot %>% rename_with(make.names)
-
-median_rent_threet <- median_rent_threet %>% rename_with(make.names)
-
-inventory_threet <- inventory_threet %>% rename_with(make.names)
-
-discount_threet <- discount_threet %>% rename_with(make.names)
-
-
-# change date from X2017.01 to 01.2017.01 to allow date format(day.year.month) ####
-
-median_rent_all_manhattant <- median_rent_all_manhattant %>% mutate(across('Date', str_replace, 'X', '01.' ))
-
-inventory_all_manhattant <- inventory_all_manhattant %>% mutate(across('Date', str_replace, 'X', '01.' ))
-
-discount_all_manhattant <- discount_all_manhattant %>% mutate(across('Date', str_replace, 'X', '01.' ))
-
-median_rent_studiot <- median_rent_studiot %>% mutate(across('Date', str_replace, 'X', '01.' ))
-
-inventory_studiot <- inventory_studiot %>% mutate(across('Date', str_replace, 'X', '01.' ))
-
-discount_studiot <- discount_studiot %>% mutate(across('Date', str_replace, 'X', '01.' ))
-
-
-median_rent_onet <- median_rent_onet %>% mutate(across('Date', str_replace, 'X', '01.' ))
-
-inventory_onet <- inventory_onet %>% mutate(across('Date', str_replace, 'X', '01.' ))
-
-discount_onet <- discount_onet %>% mutate(across('Date', str_replace, 'X', '01.' ))
-
-median_rent_twot <- median_rent_twot %>% mutate(across('Date', str_replace, 'X', '01.' ))
-
-inventory_twot <- inventory_twot %>% mutate(across('Date', str_replace, 'X', '01.' ))
-
-discount_twot <- discount_twot %>% mutate(across('Date', str_replace, 'X', '01.' ))
-
-median_rent_threet <- median_rent_threet %>% mutate(across('Date', str_replace, 'X', '01.' ))
-
-inventory_threet <- inventory_threet %>% mutate(across('Date', str_replace, 'X', '01.' ))
-
-discount_threet <- discount_threet %>% mutate(across('Date', str_replace, 'X', '01.' ))
-
-# change Date column to date format ####
-
-median_rent_all_manhattant$Date <- as.Date(median_rent_all_manhattant$Date, "%d.%Y.%m")
-
-inventory_all_manhattant$Date <- as.Date(inventory_all_manhattant$Date, "%d.%Y.%m")
-
-discount_all_manhattant$Date <- as.Date(discount_all_manhattant$Date, "%d.%Y.%m")
-
-median_rent_studiot$Date <- as.Date(median_rent_studiot$Date, "%d.%Y.%m")
-
-inventory_studiot$Date <- as.Date(inventory_studiot$Date, "%d.%Y.%m")
-
-discount_studiot$Date <- as.Date(discount_studiot$Date, "%d.%Y.%m")
-
-median_rent_onet$Date <- as.Date(median_rent_onet$Date, "%d.%Y.%m")
-
-inventory_onet$Date <- as.Date(inventory_onet$Date, "%d.%Y.%m")
-
-discount_onet$Date <- as.Date(discount_onet$Date, "%d.%Y.%m")
-
-median_rent_twot$Date <- as.Date(median_rent_twot$Date, "%d.%Y.%m")
-
-inventory_twot$Date <- as.Date(inventory_twot$Date, "%d.%Y.%m")
-
-discount_twot$Date <- as.Date(discount_twot$Date, "%d.%Y.%m")
-
-median_rent_threet$Date <- as.Date(median_rent_threet$Date, "%d.%Y.%m")
-
-inventory_threet$Date <- as.Date(inventory_threet$Date, "%d.%Y.%m")
-
-discount_threet$Date <- as.Date(discount_threet$Date, "%d.%Y.%m")
-
-
-
-# check for missing data ####
-which(is.na(median_rent_all_manhattant))
-
-which(is.na(inventory_all_manhattant))
-
-which(is.na(discount_all_manhattant))
-
-
-which(is.na(median_rent_studiot))
-
-which(is.na(inventory_studiot))
-
-which(is.na(discount_studiot))
-
-
-which(is.na(median_rent_onet))
-
-which(is.na(inventory_onet))
-
-which(is.na(discount_onet))
-
-
-which(is.na(median_rent_twot))
-
-which(is.na(inventory_twot))
-
-which(is.na(discount_twot))
-
-
-which(is.na(median_rent_threet))
-
-which(is.na(inventory_threet))
-
-which(is.na(discount_threet))
-
-
-
-
-#filling NA's and removing columns with no data ####
-
-median_rent_studiot <- 
-  median_rent_studiot %>%
-  fill(All.Downtown:West.Village, .direction = 'up') %>% 
-  fill(All.Downtown:West.Village, .direction = 'down') %>% 
-  select( -Stuyvesant.Town.PCV)
-
-
-
-inventory_studiot <- 
-  inventory_studiot %>%
-  fill(All.Downtown:West.Village, .direction = 'up') %>% 
-  fill(All.Downtown:West.Village, .direction = 'down') %>% 
-  select( -Stuyvesant.Town.PCV)
-
-
-
-discount_studiot <- 
-  discount_studiot %>%
-  fill(All.Downtown:West.Village, .direction = 'up') %>% 
-  fill(All.Downtown:West.Village, .direction = 'down') %>% 
-  select( -Stuyvesant.Town.PCV)
-
-
-
-
-
-median_rent_onet <- 
-  median_rent_onet %>%
-  fill(All.Downtown:West.Village, .direction = 'up') %>% 
-  fill(All.Downtown:West.Village, .direction = 'down') %>% 
-  select( -Stuyvesant.Town.PCV)
-
-
-
-inventory_onet <- 
-  inventory_onet %>%
-  fill(All.Downtown:West.Village, .direction = 'up') %>% 
-  fill(All.Downtown:West.Village, .direction = 'down') %>% 
-  select( -Stuyvesant.Town.PCV)
-
-
-
-discount_onet <- 
-  discount_onet %>%
-  fill(All.Downtown:West.Village, .direction = 'up') %>% 
-  fill(All.Downtown:West.Village, .direction = 'down') %>% 
-  select( -Stuyvesant.Town.PCV)
-
-
-
-
-
-
-median_rent_twot <- 
-  median_rent_twot %>%
-  fill(All.Downtown:West.Village, .direction = 'up') %>% 
-  fill(All.Downtown:West.Village, .direction = 'down') %>% 
-  select( -Stuyvesant.Town.PCV)
-
-
-
-inventory_twot <- 
-  inventory_twot %>%
-  fill(All.Downtown:West.Village, .direction = 'up') %>% 
-  fill(All.Downtown:West.Village, .direction = 'down') %>% 
-  select( -Stuyvesant.Town.PCV)
-
-
-
-discount_twot <- 
-  discount_twot %>%
-  fill(All.Downtown:West.Village, .direction = 'up') %>% 
-  fill(All.Downtown:West.Village, .direction = 'down') %>% 
-  select( -Stuyvesant.Town.PCV)
-
-
-
-
-
-
-median_rent_threet <- 
-  median_rent_threet %>%
-  fill(All.Downtown:West.Village, .direction = 'up') %>% 
-  fill(All.Downtown:West.Village, .direction = 'down') %>% 
-  select( -Stuyvesant.Town.PCV)
-
-
-
-inventory_threet <- 
-  inventory_threet %>%
-  fill(All.Downtown:West.Village, .direction = 'up') %>% 
-  fill(All.Downtown:West.Village, .direction = 'down') %>% 
-  select( -Stuyvesant.Town.PCV)
-
-
-
-discount_threet <- 
-  discount_threet %>%
-  fill(All.Downtown:West.Village, .direction = 'up') %>% 
-  fill(All.Downtown:West.Village, .direction = 'down') %>% 
-  select( -Stuyvesant.Town.PCV)
-
-
-
-# converted to long dataset which works better for ggplot with multiple lines ####
-avg_rent_all_long <- 
-  median_rent_all_manhattant %>% 
-  pivot_longer(cols = -Date, names_to = "category", values_to = "value")
-
-inventory_all_long <- 
-  inventory_all_manhattant %>% 
-  pivot_longer(cols = -Date, names_to = "category", values_to = "value")
-
-discount_all_long <- 
-  discount_all_manhattant %>% 
-  pivot_longer(cols = -Date, names_to = "category", values_to = "value")
-
-avg_rent_studio_long <- 
-  median_rent_studiot %>% 
-  pivot_longer(cols = -Date, names_to = "category", values_to = "value")
-
-inventory_studio_long <- 
-  inventory_studiot %>% 
-  pivot_longer(cols = -Date, names_to = "category", values_to = "value")
-
-discount_studio_long <- 
-  discount_studiot %>% 
-  pivot_longer(cols = -Date, names_to = "category", values_to = "value")
-
-avg_rent_one_long <- 
-  median_rent_onet %>% 
-  pivot_longer(cols = -Date, names_to = "category", values_to = "value")
-
-inventory_one_long <- 
-  inventory_onet %>% 
-  pivot_longer(cols = -Date, names_to = "category", values_to = "value")
-
-discount_one_long <- 
-  discount_onet %>% 
-  pivot_longer(cols = -Date, names_to = "category", values_to = "value")
-
-avg_rent_two_long <- 
-  median_rent_twot %>% 
-  pivot_longer(cols = -Date, names_to = "category", values_to = "value")
-
-inventory_two_long <- 
-  inventory_twot %>% 
-  pivot_longer(cols = -Date, names_to = "category", values_to = "value")
-
-discount_two_long <- 
-  discount_twot %>% 
-  pivot_longer(cols = -Date, names_to = "category", values_to = "value")
-
-avg_rent_three_long <- 
-  median_rent_threet %>% 
-  pivot_longer(cols = -Date, names_to = "category", values_to = "value")
-
-inventory_three_long <- 
-  inventory_threet %>% 
-  pivot_longer(cols = -Date, names_to = "category", values_to = "value")
-
-discount_three_long <- 
-  discount_threet %>% 
-  pivot_longer(cols = -Date, names_to = "category", values_to = "value")
+avg_rent_three_long <- process_rent_data(median_rent_three)
+inventory_three_long <- process_rent_data(inventory_three)
+discount_three_long <- process_rent_data(discount_three)
 
 
 
 # Saving as an Rdataframe to be used in shiny app ####
-save(avg_rent_all_long ,file="avg_rent_all_long.Rda")
-save(inventory_all_long ,file="inventory_all_long.Rda")
-save(discount_all_long ,file="discount_all_long.Rda")
 
-save(avg_rent_studio_long ,file="avg_rent_studio_long.Rda")
-save(inventory_studio_long ,file="inventory_studio_long.Rda")
-save(discount_studio_long ,file="discount_studio_long.Rda")
+save(avg_rent_all_long ,file="./ProcessedData/avg_rent_all_long.Rda")
+save(inventory_all_long ,file="./ProcessedData/inventory_all_long.Rda")
+save(discount_all_long ,file="./ProcessedData/discount_all_long.Rda")
 
-save(avg_rent_one_long ,file="avg_rent_one_long.Rda")
-save(inventory_one_long ,file="inventory_one_long.Rda")
-save(discount_one_long ,file="discount_one_long.Rda")
+save(avg_rent_studio_long ,file="./ProcessedData/avg_rent_studio_long.Rda")
+save(inventory_studio_long ,file="./ProcessedData/inventory_studio_long.Rda")
+save(discount_studio_long ,file="./ProcessedData/discount_studio_long.Rda")
 
-save(avg_rent_two_long ,file="avg_rent_two_long.Rda")
-save(inventory_two_long ,file="inventory_two_long.Rda")
-save(discount_two_long ,file="discount_two_long.Rda")
+save(avg_rent_one_long ,file="./ProcessedData/avg_rent_one_long.Rda")
+save(inventory_one_long ,file="./ProcessedData/inventory_one_long.Rda")
+save(discount_one_long ,file="./ProcessedData/discount_one_long.Rda")
 
-save(avg_rent_three_long ,file="avg_rent_three_long.Rda")
-save(inventory_three_long ,file="inventory_three_long.Rda")
-save(discount_three_long ,file="discount_three_long.Rda")
+save(avg_rent_two_long ,file="./ProcessedData/avg_rent_two_long.Rda")
+save(inventory_two_long ,file="./ProcessedData/inventory_two_long.Rda")
+save(discount_two_long ,file="./ProcessedData/discount_two_long.Rda")
 
-
-
-avg_rent_all_long %>%  # creating plot after file is selected.
-  filter(category == "Manhattan",
-         Date >= "2020-01-01" &
-           Date <= "2020-12-01") %>% 
-  ggplot(aes(x = Date, y = value, colour = category)) +
-  geom_line() +
-  scale_colour_hue(name = "",    # Set legend title
-                   l = 30) +
-  # ylim(0,NA) +
-  xlab("") +
-  ylab("Median Asking Rent") +
-  theme(axis.text.x = element_text(angle = 60, hjust = 1))
-
-inventory_all_long %>%  # creating plot after file is selected.
-  filter(category == "Manhattan",
-         Date >= "2019-10-01" &
-           Date <= "2022-10-01") %>% 
-  ggplot(aes(x = Date, y = value, colour = category)) +
-  geom_line() +
-  scale_colour_hue(name = "",    # Set legend title
-                   l = 30) +
- ylim(0,NA) +
-  xlab("") +
-  ylab("Listings Available") +
-  theme(axis.text.x = element_text(angle = 60, hjust = 1))
+save(avg_rent_three_long ,file="./ProcessedData/avg_rent_three_long.Rda")
+save(inventory_three_long ,file="./ProcessedData/inventory_three_long.Rda")
+save(discount_three_long ,file="./ProcessedData/discount_three_long.Rda")
 
 
-discount_all_long  %>%  # creating plot after file is selected.
-  filter(category == "Manhattan",
-         Date >= "2020-01-01" &
-           Date <= "2020-12-01") %>% 
-  ggplot(aes(x = Date, y = value, colour = category)) +
-  geom_line() +
-  scale_colour_hue(name = "",    # Set legend title
-                   l = 30) +
-  scale_y_continuous(labels = scales::percent) +
-  ylim(0,NA) +
-  xlab("") +
-  ylab("Percent of Listings Discounted") +
-  theme(axis.text.x = element_text(angle = 60, hjust = 1))
+
