@@ -16,12 +16,7 @@ library(tidyverse)
 
 
 
-
-
-
 # Set working directory  ####
-
-
 setwd("~/Desktop/NYCDS_Bootcamp/Data Analysis with R/Shiny/ShinyNYCRentals")
 
 

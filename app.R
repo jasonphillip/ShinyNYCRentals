@@ -4,8 +4,8 @@
 
 # Global ####
 
-#set working directory
-setwd("~/Desktop/NYCDS_Bootcamp/Data Analysis with R/Shiny/ShinyNYCRentals")
+#set working directory when run locally
+# setwd("~/Desktop/NYCDS_Bootcamp/Data Analysis with R/Shiny/ShinyNYCRentals")
 
 # loading libraries
 library(shinydashboard)
@@ -109,33 +109,18 @@ ui <- dashboardPage(
   ),
   ## Body content ####
   dashboardBody(tabItems(
+
+    
     # First tab content with Info ####
     tabItem(tabName = "info",
             fluidPage(
 
-              box(p("Welcome the Manhattan Rental Trends App", style = 'font-size:42px;'), 
+              box(p("Welcome the Manhattan Rental Trends App", style = 'font-size:42px;'),
                 "Coded by: Jason Phillip <Jason.Phillip@gmail.com>" , style = 'font-size:20px;', align = "center", width = 12),
               box(
-                width = 12,
-                "This app is designed to provide landlords and brokers with a comprehensive view of
-                the rental market's conditions over time. By offering data on rental rates, it helps
-                ensure that apartments are priced correctly when their lease is up for renewal. While
-                most residential leases are for one year, the app also includes data for longer
-                time frames, which is especially useful when rent has not been adjusted for several
-                years." ,  style = 'font-size:20px;', align = "center",
-                imageOutput("map_img"),
-                "The app features three tabs on the left-hand side that allow the user to easily view 
-                different trends for a selected period of time. The first tab displays a page with the
-                asking median rent, while the second shows the number of listings on the market, and
-                the third shows the percentage of listings that have discounted their asking price. 
-                Each page features a line graph and three informative boxes that display the starting
-                value, ending value, and the amount of change over the selected period of time.
-
-                To provide maximum flexibility, users can filter the data by apartment size, neighborhood, 
-                and time frame. Additionally, if an apartment is located on the border of multiple
-                neighborhoods, the user can select more than one neighborhood for a more accurate view of 
-                the data. The infoboxes will show the average of all selected neighborhoods, making it easy 
-                to compare different areas."
+                width = '12', height = "700",
+                "This app provides landlords with valuable information on how the rental market has changed since their tenant's last lease renewal. Landlords can adjust the start and end dates, apartment size, and neighborhood to align with their specific situation. Each of the three sections consists of information boxes that show the change for the selected time period, as well as a line graph that provides a clear picture of the overall trend. Additionally, if an apartment is located on the border of multiple neighborhoods, the app allows landlords to select multiple neighborhoods for a more accurate view of the data.",   style = 'font-size:20px;', align = "center",
+                imageOutput("map_img")
               )
             )
             ),
@@ -144,8 +129,6 @@ ui <- dashboardPage(
             fluidRow(
               box(
                 width = '100%' ,
-
-                # doesnt look right.  Need to update
                 infoBoxOutput("startBox"),
                 infoBoxOutput("endBox"),
                 infoBoxOutput("changeBox")
@@ -155,14 +138,13 @@ ui <- dashboardPage(
               box(plotOutput("place_plot", height = 350)),
 
               box(
-             #   title = "Neighborhood",
                 checkboxGroupInput(
                   'category',
                   "Choose a neighborhood:",
                   inline = TRUE,
                   selected = "East.Village" ,
                   choices = list(
-                    # created list by hand.  should of used a function?
+                    # List of neighborhoods
                     "Battery Park City" = "Battery.Park.City",
                     "Central Harlem" = "Central.Harlem",
                     "Central Park South" = "Central.Park.South",
@@ -206,7 +188,6 @@ ui <- dashboardPage(
                 h3(align = "center",
                    style = 'font-size:32px;',
                    ""),
-                # doesnt look right.  Need to update
                 infoBoxOutput("startdiscBox"),
                 infoBoxOutput("enddiscBox"),
                 infoBoxOutput("changediscBox")
@@ -263,7 +244,6 @@ ui <- dashboardPage(
                 h3(align = "center",
                    style = 'font-size:32px;',
                    ""),
-                # doesnt look right.  Need to update
                 infoBoxOutput("startlistBox"),
                 infoBoxOutput("endlistBox"),
                 infoBoxOutput("changelistBox")
@@ -272,7 +252,6 @@ ui <- dashboardPage(
             fluidRow(
               box(plotOutput("place2_plot", height = 350)),
               box(
-                # title = "Neighborhood",
                 checkboxGroupInput(
                   'category2',
                   "Choose a neighborhood:",
@@ -430,8 +409,6 @@ server <- function(input, output) {
   output$changeBox <- renderInfoBox({
     med_change_box()
   })
-  
-
   
   
   # Line chart for discounted listings (third tab) ####
@@ -680,16 +657,14 @@ server <- function(input, output) {
   })
   
   
-  
   # server side to render map image ####
   output$map_img <- renderImage({
-    list(src = "./www/map5.gif",
-         width = "20%",
-         height = "100%",
-         style ="display: block; margin-left: auto; margin-right: auto;")
+    list(src = "./images/map5.gif",
+         width = "260px",
+         height = "500px",
+         style = "display: block; margin: auto;")
     
-  }, deleteFile = F) 
-  
+  }, deleteFile = F)
 }
 
 # shinyApp(ui, server)
